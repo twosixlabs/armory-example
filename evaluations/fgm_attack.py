@@ -1,3 +1,6 @@
+"""
+Classifier evaluation within ARMORY
+"""
 
 import json
 import sys
