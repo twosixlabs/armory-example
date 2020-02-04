@@ -5,7 +5,7 @@ Classifier evaluation within ARMORY
 import json
 import sys
 
-from armory.webapi.data import SUPPORTED_DATASETS
+from armory.data.data import SUPPORTED_DATASETS
 from art.attacks import FastGradientMethod
 from importlib import import_module
 from armory.eval.export import Export
