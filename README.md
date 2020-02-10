@@ -1,2 +1,2 @@
-# armory-external
-Example repository for pulling external code into an [ARMORY](https://github.com/twosixlabs/armory) evaluation.
+# armory-example
+Example repository for using [ARMORY](https://github.com/twosixlabs/armory) evaluation on custom attacks/defenses/evaluation-scripts.
