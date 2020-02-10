@@ -17,7 +17,7 @@
   },
   "defense": null,
   "evaluation": {
-    "eval_file": "armory.eval_scripts.fgm_attack"
+    "eval_file": "evaluations.fgm_attack"
   },
   "metric": null,
   "model": {
