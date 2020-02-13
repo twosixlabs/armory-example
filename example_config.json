@@ -1,7 +1,7 @@
 {
   "adhoc": {
     "batch_size": 64,
-    "epochs": 3
+    "epochs": 1
   },
   "attack": {
     "budget": null,
