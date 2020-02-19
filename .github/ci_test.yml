@@ -1,0 +1,40 @@
+name: GitHub CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+jobs:
+  flake8-test:
+    name: Flake8
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-python@v1
+      - name: install flake8
+        run: pip install flake8
+      - name: Run flake8
+        run: flake8
+  black-test:
+    name: Black code format
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-python@v1
+      - name: install black
+        run: pip install black
+      - name: Ensure contributor used ("black ./") before commit
+        run: black --check ./
+  json-format-test:
+    name: JSON file format
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-python@v1
+      - name: Ensure contributor used ("python -m tools.format_json") before commit
+        run: |
+          pip install armory-testbed
+          python -m armory.tools.format_json --check
