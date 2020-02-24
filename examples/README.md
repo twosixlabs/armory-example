@@ -17,11 +17,12 @@ Adhoc (JSON or null)
 Attack (JSON or null)
     module: String 
     name: String
-    kwargs = JSON
+    kwargs: JSON
     knowledge: String
     budget: JSON
 
 Dataset (JSON or null)
+    module: String
     name: String
 
 Defense (JSON or null)
@@ -46,8 +47,7 @@ Model (JSON or null)
 SysConfig (JSON - Required)
     docker_image: String
     external_github_repo: String
-    gpu
-        use_gpu: Boolean
+    use_gpu: Boolean
 ```
 
 ### External Repos

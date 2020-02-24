@@ -6,12 +6,11 @@ import json
 import os
 import sys
 import logging
-from importlib import import_module
 
 import numpy as np
 
-from armory.utils.config_loading import load_dataset, load_model
 from armory.paths import DockerPaths
+from armory.utils.config_loading import load_dataset, load_model
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -30,40 +29,21 @@ def evaluate_classifier(config_path: str) -> None:
     classifier, preprocessing_fn = load_model(model_config)
 
     logger.info(f"Loading dataset {config['dataset']['name']}...")
-    train_x, train_y, test_x, test_y = load_dataset(
+    clean_x, adv_x, labels = load_dataset(
         config["dataset"], preprocessing_fn=preprocessing_fn
     )
 
-    logger.info(
-        f"Fitting clean unpoisoned model of {model_config['module']}.{model_config['name']}..."
-    )
-    classifier.fit(
-        train_x,
-        train_y,
-        batch_size=config["adhoc"]["batch_size"],
-        nb_epochs=config["adhoc"]["epochs"],
-    )
-
     # Evaluate the ART classifier on benign test examples
-    logger.info("Running inference on benign examples...")
-    predictions = classifier.predict(test_x)
-    benign_accuracy = np.sum(np.argmax(predictions, axis=1) == test_y) / len(test_y)
+    logger.info("Predicting on clean dataset...")
+    predictions = classifier.predict(clean_x)
+    benign_accuracy = np.sum(np.argmax(predictions, axis=1) == labels) / len(labels)
     logger.info("Accuracy on benign test examples: {}%".format(benign_accuracy * 100))
 
-    # Generate adversarial test examples
-    attack_config = config["attack"]
-    attack_module = import_module(attack_config["module"])
-    attack_fn = getattr(attack_module, attack_config["name"])
-
-    logger.info("Generating adversarial examples...")
-    attack = attack_fn(classifier=classifier, **attack_config["kwargs"])
-    test_x_adv = attack.generate(x=test_x)
-
-    # Evaluate the ART classifier on adversarial test examples
-    logger.info("Running inference on adversarial examples...")
-    predictions = classifier.predict(test_x_adv)
-    adversarial_accuracy = np.sum(np.argmax(predictions, axis=1) == test_y) / len(
-        test_y
+    # Evaluate the ART classifier on adversarial examples from transfer attack
+    logger.info("Predicting on adversarial dataset...")
+    predictions = classifier.predict(adv_x)
+    adversarial_accuracy = np.sum(np.argmax(predictions, axis=1) == labels) / len(
+        labels
     )
     logger.info(
         "Accuracy on adversarial test examples: {}%".format(adversarial_accuracy * 100)

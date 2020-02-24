@@ -4,6 +4,7 @@
     },
     "attack": null,
     "dataset": {
+        "module": "armory.data.datasets",
         "name": "imagenet_adversarial"
     },
     "defense": {
@@ -14,7 +15,7 @@
         "name": "ReluToReluX"
     },
     "evaluation": {
-        "eval_file": "armory.eval_scripts.transform_defense"
+        "eval_file": "evaluations.transform_defense"
     },
     "metric": null,
     "model": {
@@ -28,7 +29,7 @@
         }
     },
     "sysconfig": {
-        "docker_image": "twosixarmory/pytorch:0.3.3",
+        "docker_image": "twosixarmory/pytorch:0.4.1",
         "external_github_repo": null,
         "use_gpu": false
     }
