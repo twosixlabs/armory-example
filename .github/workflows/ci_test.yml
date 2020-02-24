@@ -36,5 +36,4 @@ jobs:
       - uses: actions/setup-python@v1
       - name: Ensure contributor used ("python -m tools.format_json") before commit
         run: |
-          pip install armory-testbed
-          python -m armory.tools.format_json --check
+          python -m tools.format_json --check
