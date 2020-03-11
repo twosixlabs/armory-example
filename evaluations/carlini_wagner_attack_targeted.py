@@ -60,18 +60,27 @@ def evaluate_classifier(config_path: str) -> None:
     classifier, preprocessing_fn = load_model(model_config)
 
     logger.info(f"Loading dataset {config['dataset']['name']}...")
-    x_train, y_train, x_test, y_test = load_dataset(
-        config["dataset"], preprocessing_fn=preprocessing_fn
+
+    batch_size = config["dataset"]["batch_size"]
+
+    train_data_generator = load_dataset(
+        config["dataset"],
+        split_type="train",
+        epochs=config["adhoc"]["train_epochs"],
+        preprocessing_fn=preprocessing_fn,
+    )
+    test_data_generator = load_dataset(
+        config["dataset"],
+        split_type="test",
+        epochs=1,
+        preprocessing_fn=preprocessing_fn,
     )
 
     logger.info(
         f"Fitting clean unpoisoned model of {model_config['module']}.{model_config['name']}..."
     )
-    classifier.fit(
-        x_train,
-        y_train,
-        batch_size=config["adhoc"]["batch_size"],
-        nb_epochs=config["adhoc"]["epochs"],
+    classifier.fit_generator(
+        train_data_generator, nb_epochs=train_data_generator.total_iterations,
     )
 
     # Generate adversarial test examples
@@ -90,45 +99,59 @@ def evaluate_classifier(config_path: str) -> None:
             f"Adversarial budget must have a norm of L2 or Linf. Found {norm} in config"
         )
 
-    y_target = (y_test + 1) % config["adhoc"]["num_classes"]
-
-    np.random.seed(config["adhoc"]["seed"])
-    indices = np.random.choice(x_test.shape[0], config["adhoc"]["num_attacked_pts"])
-
-    x_test_sample = x_test[indices]
-    y_test_sample = y_test[indices]
-    y_target_sample = y_target[indices]
-
     logger.info("Generating adversarial examples...")
-    x_test_adv = attack.generate(x=x_test_sample, y=y_target_sample)
 
-    diff = (x_test_adv - x_test_sample).reshape(x_test_adv.shape[0], -1)
-    epsilons = np.linalg.norm(diff, ord=lp_norm, axis=1)
+    epsilons = []
+    successful_attack_indices = []
 
-    y_clean_pred = np.argmax(classifier.predict(x_test_sample), axis=1)
-    y_adv_pred = np.argmax(classifier.predict(x_test_adv), axis=1)
+    benign_misclassification_rate = 0
+    targeted_attack_success_rate = 0
+    clean_accuracy = 0
+    cnt = 0
 
-    # Evaluate the ART classifier on adversarial test examples and clean test examples
-    successful_attack_indices = (y_clean_pred != y_target_sample) & (
-        y_adv_pred == y_target_sample
-    )
+    # Sampling from the test set, so generate adversarial examples from the same batches
+    # used to compute benign accuracy
+    for _ in range(config["adhoc"]["num_attacked_pts"] // batch_size):
+        x_test_sample, y_test_sample = test_data_generator.get_batch()
 
-    benign_misclassification_rate = np.sum(y_clean_pred == y_target_sample) / float(
-        y_clean_pred.shape[0]
-    )
+        y_target_sample = (y_test_sample + 1) % config["adhoc"]["num_classes"]
+
+        x_test_adv = attack.generate(x=x_test_sample, y=y_target_sample)
+
+        diff = (x_test_adv - x_test_sample).reshape(x_test_adv.shape[0], -1)
+        epsilons.append(np.linalg.norm(diff, ord=lp_norm, axis=1))
+
+        y_clean_pred = np.argmax(classifier.predict(x_test_sample), axis=1)
+        y_adv_pred = np.argmax(classifier.predict(x_test_adv), axis=1)
+
+        # Evaluate the ART classifier on adversarial test examples and clean test examples
+        successful_attack_indices_batch = (y_clean_pred != y_target_sample) & (
+            y_adv_pred == y_target_sample
+        )
+
+        successful_attack_indices.append(successful_attack_indices_batch)
+
+        benign_misclassification_rate += np.sum(
+            y_clean_pred == y_target_sample
+        ) / float(y_clean_pred.shape[0])
+
+        targeted_attack_success_rate += np.sum(successful_attack_indices_batch) / float(
+            y_clean_pred.shape[0]
+        )
+        clean_accuracy += np.sum(y_clean_pred == y_test_sample) / float(
+            y_clean_pred.shape[0]
+        )
+
+        cnt += 1
+
+    epsilons = np.concatenate(epsilons)
+    successful_attack_indices = np.concatenate(successful_attack_indices)
 
     logger.info(
-        f"Benign misclassification as targeted examples: {benign_misclassification_rate * 100}%"
+        f"Benign misclassification as targeted examples: {benign_misclassification_rate * 100 / cnt}%"
     )
 
-    targeted_attack_success_rate = np.sum(successful_attack_indices) / float(
-        y_clean_pred.shape[0]
-    )
-    clean_accuracy = np.sum(y_clean_pred == y_test_sample) / float(
-        y_clean_pred.shape[0]
-    )
-
-    logger.info(f"Accuracy on benign test examples: {clean_accuracy * 100}%")
+    logger.info(f"Accuracy on benign test examples: {clean_accuracy * 100 / cnt}%")
 
     epsilons = epsilons.astype(object)
     epsilons[np.logical_not(successful_attack_indices)] = None
@@ -143,7 +166,7 @@ def evaluate_classifier(config_path: str) -> None:
     }
 
     logger.info(
-        f"Finished attacking on norm {norm}. Attack success: {targeted_attack_success_rate * 100}%"
+        f"Finished attacking on norm {norm}. Attack success: {targeted_attack_success_rate * 100/cnt}%"
     )
 
     logger.info("Saving json output...")
