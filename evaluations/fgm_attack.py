@@ -30,43 +30,62 @@ def evaluate_classifier(config_path: str) -> None:
     classifier, preprocessing_fn = load_model(model_config)
 
     logger.info(f"Loading dataset {config['dataset']['name']}...")
-    train_x, train_y, test_x, test_y = load_dataset(
-        config["dataset"], preprocessing_fn=preprocessing_fn
+    train_epochs = config["adhoc"]["train_epochs"]
+    train_data_generator = load_dataset(
+        config["dataset"],
+        epochs=train_epochs,
+        split_type="train",
+        preprocessing_fn=preprocessing_fn,
+    )
+    test_data_generator = load_dataset(
+        config["dataset"],
+        epochs=2,
+        split_type="test",
+        preprocessing_fn=preprocessing_fn,
     )
 
     logger.info(
         f"Fitting clean unpoisoned model of {model_config['module']}.{model_config['name']}..."
     )
-    classifier.fit(
-        train_x,
-        train_y,
-        batch_size=config["adhoc"]["batch_size"],
-        nb_epochs=config["adhoc"]["epochs"],
+
+    classifier.fit_generator(
+        train_data_generator, nb_epochs=train_data_generator.total_iterations,
     )
 
     # Evaluate the ART classifier on benign test examples
     logger.info("Running inference on benign examples...")
-    predictions = classifier.predict(test_x)
-    benign_accuracy = np.sum(np.argmax(predictions, axis=1) == test_y) / len(test_y)
-    logger.info("Accuracy on benign test examples: {}%".format(benign_accuracy * 100))
+    benign_accuracy = 0
+    cnt = 0
+    for _ in range(test_data_generator.total_iterations // 2):
+        x, y = test_data_generator.get_batch()
+        predictions = classifier.predict(x)
+        benign_accuracy += np.sum(np.argmax(predictions, axis=1) == y) / len(y)
+        cnt += 1
+    logger.info(
+        "Accuracy on benign test examples: {}%".format(benign_accuracy * 100 / cnt)
+    )
 
     # Generate adversarial test examples
     attack_config = config["attack"]
     attack_module = import_module(attack_config["module"])
     attack_fn = getattr(attack_module, attack_config["name"])
 
-    logger.info("Generating adversarial examples...")
-    attack = attack_fn(classifier=classifier, **attack_config["kwargs"])
-    test_x_adv = attack.generate(x=test_x)
-
     # Evaluate the ART classifier on adversarial test examples
-    logger.info("Running inference on adversarial examples...")
-    predictions = classifier.predict(test_x_adv)
-    adversarial_accuracy = np.sum(np.argmax(predictions, axis=1) == test_y) / len(
-        test_y
-    )
+    logger.info("Generating / testing adversarial examples...")
+
+    attack = attack_fn(classifier=classifier, **attack_config["kwargs"])
+    adversarial_accuracy = 0
+    cnt = 0
+    for _ in range(test_data_generator.total_iterations // 2):
+        x, y = test_data_generator.get_batch()
+        test_x_adv = attack.generate(x=x)
+        predictions = classifier.predict(test_x_adv)
+        adversarial_accuracy += np.sum(np.argmax(predictions, axis=1) == y) / len(y)
+        cnt += 1
     logger.info(
-        "Accuracy on adversarial test examples: {}%".format(adversarial_accuracy * 100)
+        "Accuracy on adversarial test examples: {}%".format(
+            adversarial_accuracy * 100 / cnt
+        )
     )
 
     logger.info("Saving json output...")
