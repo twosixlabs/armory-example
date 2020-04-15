@@ -18,7 +18,7 @@
     "metric": {
         "means": true,
         "perturbation": "linf",
-        "record_metric_per_sample": true,
+        "record_metric_per_sample": false,
         "task": [
             "categorical_accuracy"
         ]
@@ -26,7 +26,7 @@
     "model": {
         "fit": true,
         "fit_kwargs": {
-            "nb_epochs": 5
+            "nb_epochs": 20
         },
         "model_kwargs": {},
         "module": "armory.baseline_models.pytorch.cifar",
@@ -40,7 +40,7 @@
         "name": "ImageClassificationTask"
     },
     "sysconfig": {
-        "docker_image": "twosixarmory/pytorch:0.6.0-rc2",
+        "docker_image": "twosixarmory/pytorch:0.6.0-dev",
         "external_github_repo": null,
         "gpus": "all",
         "use_gpu": false
