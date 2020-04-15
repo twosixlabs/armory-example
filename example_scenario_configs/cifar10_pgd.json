@@ -1,5 +1,5 @@
 {
-    "_description": "Baseline cifar10 image classification",
+    "_description": "Baseline cifar10 image classification attacked with PGD",
     "adhoc": null,
     "attack": {
         "knowledge": "white",
@@ -14,16 +14,7 @@
         "module": "armory.data.datasets",
         "name": "cifar10"
     },
-    "defense": {
-        "kwargs": {
-            "eps": 0.03,
-            "eps_step": 0.008,
-            "ratio": 0.45
-        },
-        "module": "armory.art_experimental.defences.madry_trainer_generator",
-        "name": "AdversarialTrainerMadryPGD",
-        "type": "Trainer"
-    },
+    "defense": null,
     "metric": {
         "means": true,
         "perturbation": "linf",
@@ -49,7 +40,7 @@
         "name": "ImageClassificationTask"
     },
     "sysconfig": {
-        "docker_image": "twosixarmory/pytorch:0.6.0-rc1",
+        "docker_image": "twosixarmory/pytorch:0.6.0",
         "external_github_repo": null,
         "gpus": "all",
         "use_gpu": true
