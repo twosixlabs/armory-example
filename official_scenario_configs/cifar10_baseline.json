@@ -26,7 +26,7 @@
     "model": {
         "fit": true,
         "fit_kwargs": {
-            "nb_epochs": 20
+            "nb_epochs": 5
         },
         "model_kwargs": {},
         "module": "armory.baseline_models.pytorch.cifar",
