@@ -10,7 +10,7 @@
         "name": "ProjectedGradientDescent"
     },
     "dataset": {
-        "batch_size": 16,
+        "batch_size": 64,
         "module": "armory.data.datasets",
         "name": "cifar10"
     },
@@ -21,10 +21,13 @@
             "ratio": 0.45
         },
         "module": "armory.art_experimental.defences.madry_trainer_generator",
-        "name": "AdversarialTrainerMadryPGD"
+        "name": "AdversarialTrainerMadryPGD",
+        "type": "Trainer"
     },
     "metric": {
+        "means": true,
         "perturbation": "linf",
+        "record_metric_per_sample": false,
         "task": [
             "categorical_accuracy"
         ]
@@ -46,8 +49,9 @@
         "name": "ImageClassification"
     },
     "sysconfig": {
-        "docker_image": "twosixarmory/pytorch:0.6.0-dev",
+        "docker_image": "twosixarmory/pytorch:0.6.0-rc1",
         "external_github_repo": null,
+        "gpus": "all",
         "use_gpu": true
     }
 }
