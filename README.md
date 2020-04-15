@@ -15,6 +15,6 @@ armory run official_scenario_configs/cifar10_baseline.json
 Since armory mounts your current working directory inside of evaluation docker 
 containers, users are able to run their own custom Scenarios, Models, etc.
 
-We've added an example Scenario (audio classification using spectrograms), as well as
-some custom configurations for different using different attacks and defenses using 
-ART modules.
+We've added an [example Scenario (audio classification using spectrograms)](example_scenarios/audio_spectrogram_classification.py), 
+as well as some custom configurations for different using different attacks and 
+defenses using ART modules.
