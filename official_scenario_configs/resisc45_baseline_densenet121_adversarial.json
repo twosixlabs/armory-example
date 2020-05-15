@@ -1,13 +1,17 @@
 {
-    "_description": "Resisc45 image classification, contributed by MITRE Corporation",
+    "_description": "Resisc45 image classification, contributed by MITRE Corporation, with preloaded adversarial attack",
     "adhoc": null,
     "attack": {
+        "budget": null,
         "knowledge": "white",
         "kwargs": {
-            "eps": 0.2
+            "adversarial_key": "adversarial_univpatch",
+            "batch_size": 1,
+            "description": "'adversarial_key' can be 'adversarial_univperturbation' or 'adversarial_univpatch'"
         },
-        "module": "art.attacks",
-        "name": "FastGradientMethod"
+        "module": "armory.data.adversarial_datasets",
+        "name": "resisc45_adversarial_224x224",
+        "type": "preloaded"
     },
     "dataset": {
         "batch_size": 16,
