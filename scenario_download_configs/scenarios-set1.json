@@ -24,6 +24,14 @@
                 "sincnet_librispeech_v1.pth"
             ]
         },
+        "mnist-image-classification": {
+            "dataset_name": [
+                "mnist"
+            ],
+            "weights_file": [
+                null
+            ]
+        },
         "resisc45-image-classification": {
             "dataset_name": [
                 "resisc45"
