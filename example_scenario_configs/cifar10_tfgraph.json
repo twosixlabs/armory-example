@@ -1,5 +1,5 @@
 {
-    "_description": "",
+    "_description": "Example using TF graph model from within armory-example repo",
     "adhoc": null,
     "attack": {
         "knowledge": "white",
