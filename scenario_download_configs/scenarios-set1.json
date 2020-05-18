@@ -41,6 +41,14 @@
                 "mars_ucf101_v1.pth",
                 "mars_kinetics_v1.pth"
             ]
+        },
+        "mnist-image-classification": {
+            "dataset_name": [
+                "mnist"
+            ],
+            "weights_file": [
+                null
+            ]
         }
     }
 }
