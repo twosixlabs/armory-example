@@ -25,14 +25,15 @@ def get_madry_model(model_kwargs, wrapper_kwargs, weights_file=None):
     labels_ph = model.y_input
     training_ph = tf.placeholder(tf.bool, shape=())
 
-    # Restore the checkpoint
-    saver = tf.train.Saver()
-    tf_sess = tf.Session()
+    if weights_file:
+        # Restore the checkpoint
+        saver = tf.train.Saver()
+        tf_sess = tf.Session()
 
-    saved_model_dir = paths.DockerPaths().saved_model_dir
-    filepath = os.path.join(saved_model_dir, weights_file)
-    model_file = tf.train.latest_checkpoint(filepath)
-    saver.restore(tf_sess, model_file)
+        saved_model_dir = paths.DockerPaths().saved_model_dir
+        filepath = os.path.join(saved_model_dir, weights_file)
+        model_file = tf.train.latest_checkpoint(filepath)
+        saver.restore(tf_sess, model_file)
 
     wrapped_model = TFClassifier(
         input_ph=input_ph,

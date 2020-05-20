@@ -2,10 +2,6 @@
 Model from https://github.com/MadryLab/cifar10_challenge/blob/master/model.py
 """
 # based on https://github.com/tensorflow/models/tree/master/resnet
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import numpy as np
 import tensorflow as tf
 
@@ -21,9 +17,6 @@ class Model(object):
         """
         self.mode = mode
         self._build_model()
-
-    def add_internal_summaries(self):
-        pass
 
     def _stride_arr(self, stride):
         """Map a stride scalar to the stride array for tf.nn.conv2d."""
