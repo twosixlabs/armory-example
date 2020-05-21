@@ -36,7 +36,7 @@
                 3
             ]
         },
-        "module": "arch.wrapper",
+        "module": "example_models.tf_graph.cifar_madry",
         "name": "get_madry_model",
         "weights_file": null,
         "wrapper_kwargs": {}
