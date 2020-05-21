@@ -1,0 +1,55 @@
+{
+    "_description": "CIFAR10 Image Classification, contributed by Tianji Cong, University of Michigan",
+    "adhoc": null,
+    "attack": {
+        "knowledge": "white",
+        "kwargs": {
+            "eps": 8,
+            "eps_step": 2,
+            "max_iter": 20,
+            "num_random_init": 1
+        },
+        "module": "art.attacks",
+        "name": "ProjectedGradientDescent"
+    },
+    "dataset": {
+        "batch_size": 64,
+        "module": "armory.data.datasets",
+        "name": "cifar10"
+    },
+    "defense": null,
+    "metric": {
+        "means": true,
+        "perturbation": "linf",
+        "record_metric_per_sample": false,
+        "task": [
+            "categorical_accuracy"
+        ]
+    },
+    "model": {
+        "fit": false,
+        "fit_kwargs": {},
+        "model_kwargs": {
+            "input_shape": [
+                32,
+                32,
+                3
+            ]
+        },
+        "module": "example_models.tf_graph.cifar_madry",
+        "name": "get_madry_model",
+        "weights_file": null,
+        "wrapper_kwargs": {}
+    },
+    "scenario": {
+        "kwargs": {},
+        "module": "armory.scenarios.image_classification",
+        "name": "ImageClassificationTask"
+    },
+    "sysconfig": {
+        "docker_image": "twosixarmory/tf1:0.7.0",
+        "external_github_repo": null,
+        "gpus": "0",
+        "use_gpu": true
+    }
+}
