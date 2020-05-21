@@ -38,7 +38,7 @@
         },
         "module": "arch.wrapper",
         "name": "get_madry_model",
-        "weights_file": "adv_trained",
+        "weights_file": null,
         "wrapper_kwargs": {}
     },
     "scenario": {
