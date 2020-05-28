@@ -7,7 +7,8 @@
             "eps": 0.2
         },
         "module": "art.attacks",
-        "name": "FastGradientMethod"
+        "name": "FastGradientMethod",
+        "use_label": true
     },
     "dataset": {
         "batch_size": 64,
@@ -41,9 +42,11 @@
         "name": "ImageClassificationTask"
     },
     "sysconfig": {
-        "docker_image": "twosixarmory/tf1:0.7.0",
+        "docker_image": "twosixarmory/tf1:0.8.0",
         "external_github_repo": null,
         "gpus": "all",
+        "output_dir": null,
+        "output_filename": null,
         "use_gpu": false
     }
 }
