@@ -7,7 +7,8 @@
             "eps": 0.2
         },
         "module": "art.attacks",
-        "name": "FastGradientMethod"
+        "name": "FastGradientMethod",
+        "use_label": false
     },
     "dataset": {
         "batch_size": 128,
@@ -41,9 +42,11 @@
         "name": "AudioClassificationTask"
     },
     "sysconfig": {
-        "docker_image": "twosixarmory/pytorch:0.7.0",
+        "docker_image": "twosixarmory/pytorch:0.8.0",
         "external_github_repo": "hkakitani/SincNet",
         "gpus": "all",
+        "output_dir": null,
+        "output_filename": null,
         "use_gpu": false
     }
 }
