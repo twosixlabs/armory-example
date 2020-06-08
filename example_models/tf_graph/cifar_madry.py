@@ -161,7 +161,7 @@ class Model(object):
             )
 
     def _residual(
-            self, x, in_filter, out_filter, stride, activate_before_residual=False
+        self, x, in_filter, out_filter, stride, activate_before_residual=False
     ):
         """Residual unit with 2 sub layers."""
         if activate_before_residual:
