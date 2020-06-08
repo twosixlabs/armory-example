@@ -29,7 +29,7 @@
             "nb_epochs": 1
         },
         "model_kwargs": {},
-        "module": "example_models.tf_graph.cifar_modified_inference",
+        "module": "example_models.pytorch.cifar_smoothed_inference",
         "name": "get_art_model",
         "weights_file": null,
         "wrapper_kwargs": {}
