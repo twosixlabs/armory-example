@@ -26,7 +26,13 @@
         "name": "german_traffic_sign"
     },
     "defense": {
-        "kwargs": {},
+        "kwargs": {
+            "cluster_analysis": "smaller",
+            "clustering_method": "KMeans",
+            "nb_clusters": 2,
+            "nb_dims": 43,
+            "reduce": "PCA"
+        },
         "module": "art.poison_detection.activation_defence",
         "name": "ActivationDefence",
         "type": "PoisonFilteringDefence"
@@ -47,7 +53,7 @@
         "name": "GTSRB"
     },
     "sysconfig": {
-        "docker_image": "twosixarmory/tf1:0.8.0",
+        "docker_image": "twosixarmory/tf1:0.9.0",
         "external_github_repo": null,
         "gpus": "all",
         "output_dir": null,
