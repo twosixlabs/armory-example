@@ -4,10 +4,13 @@
     "attack": {
         "knowledge": "white",
         "kwargs": {
+            "batch_size": 1,
             "eps": 8,
             "eps_step": 2,
             "max_iter": 20,
-            "num_random_init": 1
+            "num_random_init": 1,
+            "random_eps": false,
+            "targeted": false
         },
         "module": "art.attacks",
         "name": "ProjectedGradientDescent"
