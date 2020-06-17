@@ -94,7 +94,7 @@ def get_art_model(model_kwargs, wrapper_kwargs, weights_file):
         # Download tarball of all model weights
         filepath = maybe_download_weights_from_s3(weights_file)
         tar = tarfile.open(filepath)
-        tar.extractall(path=paths.runtime_paths().saved_model_dir)
+        tar.extractall(path=SAVED_MODEL_DIR)
         tar.close()
 
         model = make_ensemble_model(**model_kwargs)
