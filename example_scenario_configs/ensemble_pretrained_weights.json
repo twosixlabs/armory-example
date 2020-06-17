@@ -1,0 +1,58 @@
+{
+    "_description": "Example showing how to use pretrained weights for an ensemble of models",
+    "adhoc": null,
+    "attack": {
+        "knowledge": "white",
+        "kwargs": {
+            "batch_size": 1,
+            "eps": 0.2,
+            "eps_step": 0.1,
+            "minimal": false,
+            "num_random_init": 0,
+            "targeted": false
+        },
+        "module": "art.attacks",
+        "name": "FastGradientMethod",
+        "use_label": false
+    },
+    "dataset": {
+        "batch_size": 16,
+        "framework": "numpy",
+        "module": "armory.data.datasets",
+        "name": "resisc45"
+    },
+    "defense": null,
+    "metric": {
+        "means": true,
+        "perturbation": "linf",
+        "record_metric_per_sample": false,
+        "task": [
+            "categorical_accuracy"
+        ]
+    },
+    "model": {
+        "fit": false,
+        "fit_kwargs": {},
+        "model_kwargs": {
+            "model1_weightsfile": "model1_densenet121_imagenet.h5",
+            "model2_weightsfile": "model2_densenet121_resisc45.h5"
+        },
+        "module": "example_models.keras.ensemble_model",
+        "name": "get_art_model",
+        "weights_file": "ensemble-weights.tar.gz",
+        "wrapper_kwargs": {}
+    },
+    "scenario": {
+        "kwargs": {},
+        "module": "armory.scenarios.image_classification",
+        "name": "ImageClassificationTask"
+    },
+    "sysconfig": {
+        "docker_image": "twosixarmory/tf1:0.9.0",
+        "external_github_repo": null,
+        "gpus": "all",
+        "output_dir": null,
+        "output_filename": null,
+        "use_gpu": false
+    }
+}
