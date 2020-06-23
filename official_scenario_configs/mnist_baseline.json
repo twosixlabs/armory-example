@@ -11,7 +11,7 @@
             "num_random_init": 0,
             "targeted": false
         },
-        "module": "art.attacks",
+        "module": "art.attacks.evasion",
         "name": "FastGradientMethod",
         "use_label": true
     },
@@ -47,7 +47,7 @@
         "name": "ImageClassificationTask"
     },
     "sysconfig": {
-        "docker_image": "twosixarmory/tf1:0.9.1",
+        "docker_image": "twosixarmory/tf1:0.10.0",
         "external_github_repo": null,
         "gpus": "all",
         "output_dir": null,
