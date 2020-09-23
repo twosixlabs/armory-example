@@ -13,7 +13,7 @@
             "num_random_init": 0,
             "targeted": false
         },
-        "module": "art.attacks",
+        "module": "art.attacks.evasion",
         "name": "FastGradientMethod",
         "use_label": false
     },
@@ -49,7 +49,7 @@
         "name": "AudioClassificationTask"
     },
     "sysconfig": {
-        "docker_image": "twosixarmory/pytorch:0.9.1",
+        "docker_image": "twosixarmory/pytorch:0.11.1",
         "external_github_repo": "hkakitani/SincNet",
         "gpus": "all",
         "output_dir": null,
