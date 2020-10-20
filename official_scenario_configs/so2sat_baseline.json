@@ -1,25 +1,46 @@
 {
-    "_description": "Baseline mnist image classification",
+    "_description": "Baseline so2sat classification",
     "adhoc": null,
     "attack": {
+        "generate_kwargs": {
+            "mask": [
+                1,
+                1,
+                1,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
         "knowledge": "white",
         "kwargs": {
             "batch_size": 1,
-            "eps": 0.2,
-            "eps_step": 0.1,
-            "minimal": false,
-            "num_random_init": 0,
-            "targeted": false
+            "eps": 0.031,
+            "eps_step": 0.007,
+            "max_iter": 20,
+            "num_random_init": 1,
+            "random_eps": false,
+            "targeted": false,
+            "verbose": false
         },
         "module": "art.attacks.evasion",
-        "name": "FastGradientMethod",
+        "name": "ProjectedGradientDescent",
         "use_label": true
     },
     "dataset": {
         "batch_size": 64,
+        "eval_split": "validation",
         "framework": "numpy",
         "module": "armory.data.datasets",
-        "name": "mnist"
+        "name": "so2sat"
     },
     "defense": null,
     "metric": {
@@ -31,15 +52,20 @@
         ]
     },
     "model": {
-        "fit": true,
+        "fit": false,
         "fit_kwargs": {
             "nb_epochs": 20
         },
         "model_kwargs": {},
-        "module": "armory.baseline_models.keras.mnist",
+        "module": "armory.baseline_models.keras.so2sat",
         "name": "get_art_model",
-        "weights_file": null,
-        "wrapper_kwargs": {}
+        "weights_file": "multimodal_baseline_weights.h5",
+        "wrapper_kwargs": {
+            "clip_values": [
+                -1,
+                1
+            ]
+        }
     },
     "scenario": {
         "kwargs": {},
