@@ -1,25 +1,29 @@
 {
-    "_description": "UCF101 video classification with finetuning, contributed by MITRE Corporation",
+    "_description": "Resisc45 image classification, contributed by MITRE Corporation",
     "adhoc": null,
     "attack": {
         "knowledge": "white",
         "kwargs": {
             "batch_size": 1,
-            "eps": 51.0,
+            "eps": 0.5,
             "eps_step": 0.1,
             "minimal": false,
             "num_random_init": 0,
-            "targeted": false
+            "targeted": true
         },
         "module": "art.attacks.evasion",
         "name": "FastGradientMethod",
+        "targeted_labels": {
+            "num_classes": 45,
+            "scheme": "round-robin"
+        },
         "use_label": false
     },
     "dataset": {
-        "batch_size": 1,
+        "batch_size": 16,
         "framework": "numpy",
         "module": "armory.data.datasets",
-        "name": "ucf101"
+        "name": "resisc45"
     },
     "defense": null,
     "metric": {
@@ -27,32 +31,26 @@
         "perturbation": "linf",
         "record_metric_per_sample": false,
         "task": [
-            "categorical_accuracy",
-            "top_5_categorical_accuracy"
+            "categorical_accuracy"
         ]
     },
     "model": {
-        "fit": true,
-        "fit_kwargs": {
-            "fit_batch_size": 16,
-            "nb_epochs": 10
-        },
-        "model_kwargs": {
-            "model_status": "kinetics_pretrained"
-        },
-        "module": "armory.baseline_models.pytorch.ucf101_mars",
+        "fit": false,
+        "fit_kwargs": {},
+        "model_kwargs": {},
+        "module": "armory.baseline_models.keras.densenet121_resisc45",
         "name": "get_art_model",
-        "weights_file": "mars_kinetics_v1.pth",
+        "weights_file": "densenet121_resisc45_v1.h5",
         "wrapper_kwargs": {}
     },
     "scenario": {
         "kwargs": {},
-        "module": "armory.scenarios.video_ucf101_scenario",
-        "name": "Ucf101"
+        "module": "armory.scenarios.image_classification",
+        "name": "ImageClassificationTask"
     },
     "sysconfig": {
-        "docker_image": "twosixarmory/pytorch:0.12.1",
-        "external_github_repo": "yusong-tan/MARS",
+        "docker_image": "twosixarmory/tf1:0.12.1",
+        "external_github_repo": null,
         "gpus": "all",
         "output_dir": null,
         "output_filename": null,

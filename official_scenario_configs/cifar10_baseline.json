@@ -10,7 +10,8 @@
             "max_iter": 20,
             "num_random_init": 1,
             "random_eps": false,
-            "targeted": false
+            "targeted": false,
+            "verbose": false
         },
         "module": "art.attacks.evasion",
         "name": "ProjectedGradientDescent",
@@ -48,7 +49,7 @@
         "name": "ImageClassificationTask"
     },
     "sysconfig": {
-        "docker_image": "twosixarmory/pytorch:0.11.1",
+        "docker_image": "twosixarmory/pytorch:0.12.1",
         "external_github_repo": null,
         "gpus": "all",
         "output_dir": null,
