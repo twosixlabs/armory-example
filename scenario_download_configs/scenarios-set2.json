@@ -1,0 +1,45 @@
+{
+    "scenario": {
+        "german-traffic-sign-image-poisoning": {
+            "dataset_name": [
+                "german_traffic_sign"
+            ],
+            "weights_file": [
+                null
+            ]
+        },
+        "librispeech-asr": {
+            "dataset_name": [
+                "librispeech"
+            ],
+            "weights_file": [
+                null
+            ]
+        },
+        "so2sat-multimodal-classification": {
+            "dataset_name": [
+                "so2sat"
+            ],
+            "weights_file": [
+                "multimodal_baseline_weights.h5"
+            ]
+        },
+        "ucf-action-recognition": {
+            "dataset_name": [
+                "ucf101"
+            ],
+            "weights_file": [
+                "mars_ucf101_v1.pth",
+                "mars_kinetics_v1.pth"
+            ]
+        },
+        "xview-object-detection": {
+            "dataset_name": [
+                "xview"
+            ],
+            "weights_file": [
+                "xview_model_state_dict_epoch_99_loss_0p67"
+            ]
+        }
+    }
+}
