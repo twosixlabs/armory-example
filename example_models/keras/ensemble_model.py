@@ -8,7 +8,6 @@ import tarfile
 from art.classifiers import KerasClassifier
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.densenet import DenseNet121
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import GlobalAveragePooling2D, Dense, Lambda
@@ -29,6 +28,7 @@ def mean_std():
 
     return resisc_mean, resisc_std
 
+
 def make_ensemble_model(**model_kwargs) -> tf.keras.Model:
     input = tf.keras.Input(shape=(256, 256, 3))
 
@@ -45,7 +45,9 @@ def make_ensemble_model(**model_kwargs) -> tf.keras.Model:
     models = []
 
     for model_name in model_names:
-        model_notop = DenseNet121(include_top=False, weights=None, input_tensor=img_standardized)
+        model_notop = DenseNet121(
+            include_top=False, weights=None, input_tensor=img_standardized
+        )
 
         # Add new layers
         x = GlobalAveragePooling2D()(model_notop.output)
