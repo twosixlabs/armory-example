@@ -11,7 +11,7 @@
             "num_random_init": 0,
             "targeted": false
         },
-        "module": "art.attacks",
+        "module": "art.attacks.evasion",
         "name": "FastGradientMethod"
     },
     "dataset": {
@@ -38,7 +38,7 @@
         "name": "AudioSpectrogramClassificationTask"
     },
     "sysconfig": {
-        "docker_image": "twosixarmory/tf1:0.9.1",
+        "docker_image": "twosixarmory/tf1:0.12.1",
         "external_github_repo": null,
         "gpus": "all",
         "use_gpu": true

@@ -9,6 +9,7 @@ Scenario contributed by: MITRE Corporation
 """
 
 import logging
+from typing import Optional
 
 import numpy as np
 from tqdm import tqdm
@@ -50,7 +51,9 @@ def segment(x, y, n_time_bins):
 
 
 class AudioSpectrogramClassificationTask(Scenario):
-    def _evaluate(self, config: dict) -> dict:
+    def _evaluate(
+        self, config: dict, num_eval_batches: Optional[int], skip_benign: Optional[bool]
+    ) -> dict:
         """
         Evaluate a config file for classification robustness against attack.
         """
