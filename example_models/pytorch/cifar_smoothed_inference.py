@@ -67,7 +67,7 @@ class Net(nn.Module):
                 noise = torch.randn_like(batch, device=DEVICE) * 0.1
                 predictions = self._training_pass(batch + noise).argmax(1)
                 counts += _count_arr(predictions, self.num_classes)
-        return counts / samples
+        return torch.true_divide(counts, samples)
 
     def forward(self, x):
         # This flag is changed by ART's Classifier.set_learning_phase()
