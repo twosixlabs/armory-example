@@ -11,7 +11,7 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.densenet import DenseNet121
 from tensorflow.keras.models import Model
-from tensorflow.keras.layers import GlobalAveragePooling2D, Dense
+from tensorflow.keras.layers import GlobalAveragePooling2D, Dense, Lambda
 
 from armory.data.utils import maybe_download_weights_from_s3
 from armory import paths
@@ -29,36 +29,23 @@ def mean_std():
 
     return resisc_mean, resisc_std
 
-
-def preprocess_input_densenet121_resisc(img):
-    # Model was trained with Caffe preprocessing on the images
-    # load the mean and std of the [0,1] normalized dataset
-    # Normalize images: divide by 255 for [0,1] range
-    mean, std = mean_std()
-    img_norm = img / 255.0
-    # Standardize the dataset on a per-channel basis
-    output_img = (img_norm - mean) / std
-    return output_img
-
-
-def preprocessing_fn(x: np.ndarray) -> np.ndarray:
-    shape = (224, 224)  # Expected input shape of model
-    output = []
-    for i in range(x.shape[0]):
-        im_raw = image.array_to_img(x[i])
-        im = image.img_to_array(im_raw.resize(shape))
-        output.append(im)
-    output = preprocess_input_densenet121_resisc(np.array(output))
-    return output
-
-
 def make_ensemble_model(**model_kwargs) -> tf.keras.Model:
-    input = tf.keras.layers.Input(shape=(224, 224, 3))
+    input = tf.keras.Input(shape=(256, 256, 3))
+
+    # Preprocessing layers
+    img_scaled_to_255 = Lambda(lambda image: image * 255)(input)
+    img_resized = Lambda(lambda image: tf.image.resize(image, (224, 224)))(
+        img_scaled_to_255
+    )
+    img_scaled_to_1 = Lambda(lambda image: image / 255)(img_resized)
+    mean, std = mean_std()
+    img_standardized = Lambda(lambda image: (image - mean) / std)(img_scaled_to_1)
+
     model_names = ["model1", "model2"]
     models = []
 
     for model_name in model_names:
-        model_notop = DenseNet121(include_top=False, weights=None, input_tensor=input)
+        model_notop = DenseNet121(include_top=False, weights=None, input_tensor=img_standardized)
 
         # Add new layers
         x = GlobalAveragePooling2D()(model_notop.output)
