@@ -16,12 +16,6 @@ from armory.data.utils import maybe_download_weights_from_s3
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-def preprocessing_fn(img):
-    # Model will trained with inputs normalized from 0 to 1
-    img = img.astype(np.float32) / 255.0
-    return img
-
-
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
@@ -67,7 +61,7 @@ class Net(nn.Module):
                 noise = torch.randn_like(batch, device=DEVICE) * 0.1
                 predictions = self._training_pass(batch + noise).argmax(1)
                 counts += _count_arr(predictions, self.num_classes)
-        return counts / samples
+        return torch.true_divide(counts, samples)
 
     def forward(self, x):
         # This flag is changed by ART's Classifier.set_learning_phase()

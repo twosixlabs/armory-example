@@ -5,17 +5,14 @@ Model from https://github.com/MadryLab/cifar10_challenge/blob/master/model.py
 Contributed by: Tianji Cong, University of Michigan
 """
 import os
+import logging
 
 import numpy as np
 import tensorflow as tf
 from armory import paths
 from art.classifiers import TFClassifier
 
-
-def preprocessing_fn(img):
-    img = img.astype(np.float32)
-
-    return img
+logger = logging.getLogger(__name__)
 
 
 def get_madry_model(model_kwargs, wrapper_kwargs, weights_file=None):
@@ -34,6 +31,10 @@ def get_madry_model(model_kwargs, wrapper_kwargs, weights_file=None):
         filepath = os.path.join(saved_model_dir, weights_file)
         model_file = tf.train.latest_checkpoint(filepath)
         saver.restore(tf_sess, model_file)
+    else:
+        logger.warning(
+            "No weights were loaded and model is not trainable. Running inference without saved_weights or training..."
+        )
 
     wrapped_model = TFClassifier(
         input_ph=input_ph,
@@ -42,7 +43,7 @@ def get_madry_model(model_kwargs, wrapper_kwargs, weights_file=None):
         loss=model.xent,
         learning=training_ph,
         sess=tf_sess,
-        clip_values=(0, 255),
+        clip_values=(0.0, 1.0),
         **wrapper_kwargs
     )
 
@@ -75,7 +76,7 @@ class Model(object):
             self.y_input = tf.placeholder(tf.int64, shape=[None])
 
             input_standardized = tf.map_fn(
-                lambda img: tf.image.per_image_standardization(img), self.x_input
+                lambda img: tf.image.per_image_standardization(img * 255), self.x_input
             )
             x = self._conv(
                 "init_conv", input_standardized, 3, 3, 16, self._stride_arr(1)
