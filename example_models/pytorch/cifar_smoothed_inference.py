@@ -16,12 +16,6 @@ from armory.data.utils import maybe_download_weights_from_s3
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-def preprocessing_fn(img):
-    # Model will trained with inputs normalized from 0 to 1
-    img = img.astype(np.float32) / 255.0
-    return img
-
-
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()

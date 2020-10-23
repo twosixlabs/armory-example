@@ -12,12 +12,6 @@ from armory import paths
 from art.classifiers import TFClassifier
 
 
-def preprocessing_fn(img):
-    img = img.astype(np.float32)
-
-    return img
-
-
 def get_madry_model(model_kwargs, wrapper_kwargs, weights_file=None):
     model = make_madry_model(**model_kwargs)
     input_ph = model.x_input
@@ -42,7 +36,7 @@ def get_madry_model(model_kwargs, wrapper_kwargs, weights_file=None):
         loss=model.xent,
         learning=training_ph,
         sess=tf_sess,
-        clip_values=(0, 255),
+        clip_values=(0.0, 1.0),
         **wrapper_kwargs
     )
 
@@ -75,7 +69,7 @@ class Model(object):
             self.y_input = tf.placeholder(tf.int64, shape=[None])
 
             input_standardized = tf.map_fn(
-                lambda img: tf.image.per_image_standardization(img), self.x_input
+                lambda img: tf.image.per_image_standardization(img) * 255, self.x_input
             )
             x = self._conv(
                 "init_conv", input_standardized, 3, 3, 16, self._stride_arr(1)
