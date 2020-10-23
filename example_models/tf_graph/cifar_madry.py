@@ -5,12 +5,14 @@ Model from https://github.com/MadryLab/cifar10_challenge/blob/master/model.py
 Contributed by: Tianji Cong, University of Michigan
 """
 import os
+import logging
 
 import numpy as np
 import tensorflow as tf
 from armory import paths
 from art.classifiers import TFClassifier
 
+logger = logging.getLogger(__name__)
 
 def get_madry_model(model_kwargs, wrapper_kwargs, weights_file=None):
     model = make_madry_model(**model_kwargs)
@@ -28,6 +30,10 @@ def get_madry_model(model_kwargs, wrapper_kwargs, weights_file=None):
         filepath = os.path.join(saved_model_dir, weights_file)
         model_file = tf.train.latest_checkpoint(filepath)
         saver.restore(tf_sess, model_file)
+    else:
+        logger.warning(
+            "No weights were loaded and model is not trainable. Running inference without saved_weights or training..."
+        )
 
     wrapped_model = TFClassifier(
         input_ph=input_ph,
