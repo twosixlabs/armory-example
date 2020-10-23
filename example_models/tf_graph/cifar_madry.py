@@ -14,6 +14,7 @@ from art.classifiers import TFClassifier
 
 logger = logging.getLogger(__name__)
 
+
 def get_madry_model(model_kwargs, wrapper_kwargs, weights_file=None):
     model = make_madry_model(**model_kwargs)
     input_ph = model.x_input
