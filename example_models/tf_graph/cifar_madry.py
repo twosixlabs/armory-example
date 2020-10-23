@@ -69,7 +69,7 @@ class Model(object):
             self.y_input = tf.placeholder(tf.int64, shape=[None])
 
             input_standardized = tf.map_fn(
-                lambda img: tf.image.per_image_standardization(img) * 255, self.x_input
+                lambda img: tf.image.per_image_standardization(img * 255), self.x_input
             )
             x = self._conv(
                 "init_conv", input_standardized, 3, 3, 16, self._stride_arr(1)
