@@ -2,7 +2,8 @@
 This repository is meant to be an example of how to run 
 [Armory](https://github.com/twosixlabs/armory) adversarial defense evaluations.
 For more information about Armory, please refer to the official
-[docs](https://armory.readthedocs.io/en/latest/).
+[docs](https://armory.readthedocs.io/en/latest/). A tutorial on using Armory and
+armory-example can be found at (TUTORIAL.md).
 
 ### Official Scenarios
 Configuration files for official scenarios are provided. 
