@@ -7,7 +7,7 @@
 * Install [docker](https://docs.docker.com/install) on your system. Note: for academic setups and 
 other environments that do not permit docker, Armory has a [no-docker](https://armory.readthedocs.io/en/latest/docker/#running-without-docker) mode.
 * Install [python](https://www.python.org/downloads/) 3.6+ on your system.
--Recommended: create a virtual in which to install armory, perhaps with virtualenv or anaconda.
+*Recommended: create a virtual environment in which to install armory, perhaps with virtualenv or anaconda.
 
 ## Setting up armory
 ```
