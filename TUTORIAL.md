@@ -75,8 +75,8 @@ Don't be concerned with the details here, it is just to give you a taste of
 the thousands of lines of logging that are generated. The last two lines are
 important.
 
-> TODO: check with neal that the output/iso-8601-stamp directory ought
-be explained
+> TODO: check with neal that the output/iso-8601-datestamp directory ought be
+explained
 
 ## Scenario output
 
@@ -91,26 +91,47 @@ dictionary containing the relevant
 [metrics](https://armory.readthedocs.io/en/latest/metrics/) from the run, and a
 timestamp.
 
-> MARKER: this is about as far as matt is gonna get tonight
+# How to make an armory job
 
-## Integrating a model to work with armory
+An armory job consists of a job-file which describes the model evaluation
+along with files specified in that job. Rather than constructing a job from
+scratch, it is easier to copy an existing job and modify it. We'll run
+through an example here.
 
 ### Model updates
 
-The following example integrates a Pytorch model with Armory. It modifies the official scenario
-[config](https://github.com/twosixlabs/armory-example/blob/master/official_scenario_configs/so2sat_baseline.json)
-for the multimodal classification problem on the So2Sat dataset and a baseline
-[model](model_to_integrate/model/so2sat_split_unintegrated.py) that is not integrated
-with ART or Armory. The weights file is available from S3 at
-https://armory-public-data.s3.us-east-2.amazonaws.com/model-weights/so2sat_split_weights.model
-though a typical users workflow would work with a local weights file from model training.
+We'll start with the [so2sat_baseline][so2base] job. The so2sat_baseline
+describes a multimodal classification problem against the SO2Sat dataset.
+For convenience, we'll also use a pre-built [weights file][weights].
+Outside of this demo, you'd probably build your own weights via model
+training.
 
-Neural network models to be integrated with Armory need to by wrapped with
-[ART](https://github.com/Trusted-AI/adversarial-robustness-toolbox) estimators. These
-wrappers enable the ART suite of attacks as well as custom attacks to be run against the
-models. For the example [model](model_to_integrate/model/so2sat_split_unintegrated.py),
-this requires the import ```from art.classifiers import PyTorchClassifier``` to wrap the model
-with an ART PytorchClassifier. As seen in the integrated [model](model_to_integrate/model/so2sat_split.py),
+For armory to evaluate a neural network model, it needs to be wrapped
+with [Adversarial Robustness Toolbox][art] estimator. These wrappers
+enable the ART suite of attacks as well as custom attacks to be run
+against the model. Starting from the [unwrapped model][unwrapped]
+we'll add a wrapping function
+```
+from art.classifiers import PyTorchClassifier
+…
+def get_art_model(model_kwargs, wrapper_kwargs, weights_path=None):
+    model = make_so2sat_model(**model_kwargs)
+    model.to(DEVICE)
+
+    if weights_path:
+        checkpoint = torch.load(weights_path, map_location=DEVICE)
+…
+```
+You can see the [completed wrapped model][wrapped] file for the rest of that
+python function.
+
+  [so2base]: https://github.com/twosixlabs/armory-example/blob/master/official_scenario_configs/so2sat_baseline.json
+  [weights]: https://armory-public-data.s3.us-east-2.amazonaws.com/model-weights/so2sat_split_weights.model
+  [art]: https://github.com/Trusted-AI/adversarial-robustness-toolbox
+  [unwrapped]: model_to_integrate/model/so2sat_split_unintegrated.py
+  [wrapped]: model_to_integrate/model/so2sat_split.py
+
+As seen in the integrated [model](model_to_integrate/model/so2sat_split.py),
 to integrate, we add a method that takes arguments of ```model_kwargs, wrapper_kwargs, weight_path``` which
 returns the model with the weights from ```weight_path``` (the full path to weights file(s))
 loaded and returns a wrapped version of the model.
