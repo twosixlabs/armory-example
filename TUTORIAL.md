@@ -3,16 +3,23 @@
 ## Prerequisites
 
 * Install [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
-* Install [docker](https://docs.docker.com/install).
 * Install [python](https://www.python.org/downloads/) 3.6+ on your system.
-* Recommended: create a virtual environment in which to install armory, perhaps
-  with virtualenv or anaconda.
+* Install [docker](https://docs.docker.com/install).
+
+Like many python applications, we recommend creating a virtual environment in
+which to install armory, perhaps with virtualenv or anaconda.
+
+If your local rules prohibit docker execution, there is limited
+support described in The Armory Documentation under [Running without
+docker][nodocker].
+
+  [nodocker]: https://armory.readthedocs.io/en/latest/docker/#running-without-docker
 
 ## Setting up armory
 
 The TwoSix Armory package goes by the name `armory-testbed` on
 in the pip master repository at pypi.org. Install it and check that
-you got the version you think you did:
+you've got the version you think you did:
 ```
 pip install armory-testbed
 armory version
@@ -27,7 +34,7 @@ git clone https://github.com/twosixlabs/armory-example.git
 cd armory-example
 ```
 The armory configure command asks some questions about where you'd like to store
-the files that will be created or downloaded by armory. The armory configure
+files that will be created or downloaded by armory. The armory configure
 command uses the `~/.armory` directory for its defaults, although you can change
 those to any location convenient to you. Demonstration output in this tutorial
 will show as `~/.armory`
@@ -75,17 +82,18 @@ Don't be concerned with the details here, it is just to give you a taste of
 the thousands of lines of logging that are generated. The last two lines are
 important.
 
-> TODO: check with neal that the output/iso-8601-datestamp directory ought be
-explained
 
 ## Scenario output
 
-When the `armory run` job completes, results will be placed your
-`~/.armory/outputs` directory, `ImageClassificationTask_1604542702.json` in
-the example above.
+When the armory job completes, results will be placed in a date-stamped
+subdirectory in your `~/.armory/outputs` directory. For the example
+run above the output file
+```
+~/.armory/outputs/2020-11-05T020942.176390/ImageClassificationTask_1604542702.json
+```
+was created. Yes, we realize that microsecond accuracy is likely not needed and will be removed in a future release.
 
-The
-output json will be the sole file in the directory. The output json contains the
+The output json contains the
 version of armory it was run on, the job it was run with, and a results
 dictionary containing the relevant
 [metrics](https://armory.readthedocs.io/en/latest/metrics/) from the run, and a
@@ -120,10 +128,23 @@ def get_art_model(model_kwargs, wrapper_kwargs, weights_path=None):
 
     if weights_path:
         checkpoint = torch.load(weights_path, map_location=DEVICE)
-…
+        model.load_state_dict(checkpoint)
+
+    wrapped_model = PyTorchClassifier(
+        model,
+        loss=nn.CrossEntropyLoss(),
+        optimizer=torch.optim.Adam(model.parameters(), lr=0.003),
+        input_shape=(14, 32, 32),
+        nb_classes=17,
+        **wrapper_kwargs,
+    )
+    return wrapped_model
 ```
-You can see the [completed wrapped model][wrapped] file for the rest of that
-python function.
+
+As shown in the excerpt above, to integrate, we add a method that takes
+arguments of `model_kwargs, wrapper_kwargs, weights_path` and returns the model
+with the weights from `weights_path` loaded and returns a wrapped version of the
+model.
 
   [so2base]: https://github.com/twosixlabs/armory-example/blob/master/official_scenario_configs/so2sat_baseline.json
   [weights]: https://armory-public-data.s3.us-east-2.amazonaws.com/model-weights/so2sat_split_weights.model
@@ -131,112 +152,120 @@ python function.
   [unwrapped]: model_to_integrate/model/so2sat_split_unintegrated.py
   [wrapped]: model_to_integrate/model/so2sat_split.py
 
-As seen in the integrated [model](model_to_integrate/model/so2sat_split.py),
-to integrate, we add a method that takes arguments of ```model_kwargs, wrapper_kwargs, weight_path``` which
-returns the model with the weights from ```weight_path``` (the full path to weights file(s))
-loaded and returns a wrapped version of the model.
-
 ### Weights file transfer
-The weights file need to be copied to the config's <saved_model_dir>, by default at ```~/.armory/saved_models```.
-```cp so2sat_split_weights.model ~/.armory/saved_models```
 
-### Config updates
-For more details on Armory configurations, please refer to https://armory.readthedocs.io/en/latest/configuration_files.
-The model can be integrated by adapting the official
-[config](https://github.com/twosixlabs/armory-example/blob/master/official_scenario_configs/so2sat_baseline.json).
+The weights file need to be copied to the `~/.armory/saved_models`.
+```
+cp so2sat_split_weights.model ~/.armory/saved_models
+```
 
-We copy the original config and update the following fields:
-model: We update the model to refer to the path of the example_model, in this case, the module is
-```model_to_integrate.model.so2sat_split```. If the method that returned the model had a different
-named than ```get_art_model```, we would update the ```name``` field. Note: the model does not need to
-reside in the same repo as ```armory-example```. We can add external Github repos as described in the
-External repo [documentation](https://armory.readthedocs.io/en/stable/external_repos/).
+### Config-file updates
 
-We update the reference to the weights files to refer to the weights file so2sat_split_weights.model. Note
-that we simply use the name of the weights file, not the full path.
+Now that we have modified the model, we need to alter a evaluation config file
+to incorporate it. The model can be integrated by adapting the official
+[job config][so2base].
 
-Finally, since the official scenario config was a Keras model and we are using a Pytorch model, we update
-the docker image to be the Pytorch image.
+We copy that original job to `my_so2sat.json` and update specifications
+within it.
 
-The final file with all the changes is available for [reference](example_scenario_configs/integrate_so2sat_ref.json).
+First, we update the model to refer to the path of the example_model, in this
+case, the module is `model_to_integrate.model.so2sat_split`. Because
+we named our new model function `get_arg_model` the model name field
+remains unchanged.
+
+Next we change weights_files to refer to the weights file we imported
+above. This yields the line:
+```
+"weights_file": "so2sat_split_weights.model"
+```
+in our job configuration file. Here we only specify the name of the weights
+file, not the full path; armory knows to look for it in the
+`~/.armory/saved_models` directory.
+
+Finally, since the official scenario config was a Keras model and we are using a
+PyTorch model, we update the docker image to be the PyTorch image yielding
+the line
+```
+"docker_image": "twosixarmory/pytorch:0.12.1"
+```
+in the sysconfig block.
+
+You can see what the [modified file][integrated] looks like with all the changes
+we've made. The Armory documentation has full details of the [configuration file
+format][configs].
+
+  [configs]: https://armory.readthedocs.io/en/latest/configuration_files
+  [external-repo]: https://armory.readthedocs.io/en/stable/external_repos/
+  [integrated]: example_scenario_configs/integrate_so2sat_ref.json
 
 ### Checking integration
 
-We can check integration quickly by running ```armory run --check <path/to/new/config>```. This will run
-armory on a single batch of inputs, and without training (except for the poisoning scenario, which requires
-training for integration).
+You can check that the new integration works by running
+```
+armory run --check
+```
+This will run armory on a single batch of inputs, and without training (except
+for the poisoning scenario, which requires training for integration).
 
-## Common errors
-`pip install armory-testbed` returns “Could not find a version that satisfies the requirement armory-testbed”
-*	This is likely because you are trying to install armory with a python version prior to 3.6. Ensure your python
-environment version is 3.6 or greater.
+# Appendices
 
-armory download <path/to/config.json> returns a KeyError: 'dataset_name'
-* Armory download does not take regular configs as arguments. This is a feature we are exploring adding, but for now
-it only takes download configs such as https://github.com/twosixlabs/armory-example/blob/master/scenario_download_configs/scenarios-set2.json
-as arguments.
+Here are some additional detail that some new users of Armory have
+found useful.
 
-## Additional reading:
-Extended documentation are found here: https://armory.readthedocs.io/en/latest/
+## Pre-loading the datasets
 
-Primary Armory GitHub repo: https://github.com/twosixlabs/armory
-
-# Stuff that Matt excised that might want to be put back
-
-> In the context of a getting started tutorial this seems to be unnecessary
-> complexity since `run` will load stuff anyway.
-
-Before running an armory job, you may want to pre-download all of the
-model weights and datsets by running:
+Before running an armory job, you may want to pre-download all of the model
+weights and datsets by running:
 ```
 armory download scenario_download_configs/scenarios-set2.json
 ```
-from the root of the armory-example repo. This process is relatively slow, so we
-recommend running it overnight if feasible. Note that each job that is run
-automatically will download the relevant weights and datasets when it is run
-with `armory run` in any case.
-
----
-
-> If no-docker can be taken out of the happy path of the tutorial it reads more
-> cleanly.
-
-> From prerequisites
-
-See the section below on no-docker mode if your environment does not permit docker.
+in your armory-example directory. Depending on your network connection you might
+want let this run overnight or at least across a long lunch break. This step is
+optional, each job will automatically download the relevant weights and datasets
+when it is run with `armory run` if the needed data are not already present.
 
 
+## Common errors
 
-### Using no-docker mode
+`pip install armory-testbed` returns “Could not find a version that satisfies
+the requirement armory-testbed”
 
+  * This is likely because you are trying to install armory with a python
+    version prior to 3.6. Ensure your python environment version is 3.6 or
+    greater.
 
-If you work in an environment where docker is not permitted, you can run armory
-in
-[no-docker](https://armory.readthedocs.io/en/latest/docker/#running-without-docker)
-mode.
+`armory download job-file`  returns a KeyError: 'dataset_name'
 
-If you use no-docker mode, you'll need to install additional packages for
-armory. These additional packages are listed in
-[host-requirements.txt](https://github.com/twosixlabs/armory/blob/master/host-requirements.txt)
-Depending on which framework you use (TensorFlow1, TensorFlow2, PyTorch,
-etc.) some entries will need to be uncommented as described in that file.
-Then run
-```
-pip install -r host-requirements.txt
-```
-
----
-
-> again, to keep the tutorial happy path clean I took out
+  * Armory download does not take regular configs as arguments. This is a
+    feature we are exploring adding, but for now it only takes download configs
+    such as
+    https://github.com/twosixlabs/armory-example/blob/master/scenario_download_configs/scenarios-set2.json
+    as arguments.
 
 ### Debugging an armory run
-To access the running job with tools such as [pdb](https://docs.python.org/3/library/pdb.html),
-armory can be run in interactive mode:
+
+To access the running job with tools such as
+[pdb](https://docs.python.org/3/library/pdb.html), armory can be run in
+interactive mode:
 ```
 armory run job-file --interactive
 ```
 which starts the container specified in the job-file, copies the job-file into
-the container, and shows you the commands to attach to the running container.
-Similar to non-interactive mode, job results are placed in the output directory.
-To later close the interactive container, type `ctrl-c` in the terminal where
-this `armory run` command was started.
+the container, and shows you the commands needed to attach to the running
+container. Similar to non-interactive mode, job results are placed in the output
+directory. To later close the interactive container, type `ctrl-c` in the
+terminal where this armory run command was started.
+
+## Additional reading:
+
+The complete Armory documentation: https://armory.readthedocs.io/en/latest/
+
+The Armory GitHub repository: https://github.com/twosixlabs/armory
+
+# stuff matt pulled out of the happy path again
+
+Note: the model does not need to reside in the same repo as
+`armory-example`. We can add external Github repos as described in the [External
+repo documentation][external-repo]).
+
+---
