@@ -87,4 +87,4 @@ armory run custom_attack.json
 
 # Notes
 * This example is designed to be run from within the tutorial directory.  To access the `CustomAttack` class from another location, set the `local_repo_path` parameter under `sysconfig` in the scenario file to point to the folder containing the custom class.
-* Because this scenario also fits the model, changing `batch_size` will also impact training.
+* Because this scenario also fits the model, changing `batch_size` will also impact training and cause model fitting to occur slowly.  For efficiency, the scenario config may be modified to load pretrained weights.
