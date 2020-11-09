@@ -8,7 +8,7 @@ class CustomAttack(ProjectedGradientDescent):
         modified_kwargs["targeted"] = True
         super().__init__(estimator, **modified_kwargs)
 
-    def generate(self, x, y, **kwargs):
+    def generate(self, x, y):
 
         for target in range(10):
 
