@@ -2,7 +2,7 @@
 As a first step, we will demonstrate how to implement a custom attack - one which does not fit directly into the existing attack types supported by ARMORY.
 
 # Goal
-Starting with the defended CIFAR10 scenario [here](../official_scenario_configs/cifar10_defended_example.json), we want to modify the attack as follows: rather than a simple untargeted attack, launch a targeted projected gradient descent (PGD) attack against each incorrect class, one at a time, until a successful adversarial example is identified.
+Starting with the defended CIFAR10 scenario [here](../official_scenario_configs/cifar10_baseline.json), we want to modify the attack as follows: rather than a simple untargeted attack, launch a targeted projected gradient descent (PGD) attack against each incorrect class, one at a time, until a successful adversarial example is identified.
 
 # Implementation
 Because ARMORY targeted attacks are designed to attack only one class at a time, and not repeat the attack with a different target for the same example, this requires a custom attack.
@@ -25,17 +25,6 @@ First, we will modify our scenario file to point to a custom attack class.  The 
 },
 ```
 
-For simplicity, we will also reduce the batch size to a single sample.
-
-```json
-"dataset": {
-    "batch_size": 1,
-    "framework": "numpy",
-    "module": "armory.data.datasets",
-    "name": "cifar10"
-},
-```
-
 Next, we will create a new class for the custom attack.  Because the attack will consist of repeated applications of a PGD attack, our new class will inherit from ART's `ProjectGradientDescent` class.  Our new class will override the `__init__` method of the parent class, to control attack configuration, and the `generate` method to control how the attack actually functions.
 
 First, we implement the `__init__` method, which receives as arguments the estimator (i.e. classifier) and keyword arguments (kwargs).  Because the PGD arguments are configured in the scenario file, the only change required here is to configure the attack as targeted.  By configuring the attack as a targeted one here, but not in the scenario file, we bypass a check that both `targeted` and `use_label` are set to `true`, and allow our attack to receive ground truth labels while still using a targeted attack.  We then initialize the PGD attack by calling the `__init__` method of the parent class.  The complete `__init__` method is shown below
@@ -51,27 +40,33 @@ class CustomAttack(ProjectedGradientDescent):
         super().__init__(estimator, **modified_kwargs)
 ```
 
-Finally, we write the `generate` method where the actual attack logic will be implemented.  Our attack will receive two arguments: the benign image `x` and the ground truth label `y`.  Our attack logic should iterate over all possible classes (i.e. classes 0-9), perform a targeted attack against each class except class `y`, and quit once a successful adversarial example is found.  Since our attack inherits from `ProjectedGradientDescent`, we can call the `generate` method of the parent class to implement each PGD attack with the target label.  To check whether the generated example is successful, we can use the `self.estimator.predict` method to determine the predicted classes for each generated image.  The full `generate` method of our custom class is shown below.
+Next, we write the `generate` method where the actual attack logic will be implemented.  Our attack will receive two arguments: a set of benign images `x` and the ground truth labels `y`.  Our attack will iterate over a single image in the batch at a time.  For each image, our attack should iterate over all possible classes (i.e. classes 0-9), perform a targeted attack against each class except the ground truth class, and quit once a successful adversarial example is found.  Since our attack inherits from `ProjectedGradientDescent`, we can call the `generate` method of the parent class to implement each PGD attack with the target label.  To check whether the generated example is successful, we can use the `self.estimator.predict` method to determine the predicted classes for each generated image.  The full `generate` method of our custom class is shown below.
 
 ```python
-def generate(self, x, y, **kwargs):
+def generate(self, x, y):
 
-    for target in range(10):
+    x_adv = []
+    for x_sample, y_sample in zip(x, y):
+        for target in range(10):
 
-        # Do not target correct class
-        if target == y[0]:
-            continue
-        
-        # Generate sample targeting `target` class
-        y_target = np.zeros((1, 10), dtype=np.int64)
-        y_target[0, target] = 1
-        x_adv = super().generate(x, y_target)
+            # Do not target correct class
+            if target == y_sample:
+                continue
 
-        # Check - does this example fool the classifier?
-        x_adv_pred = np.argmax(self.estimator.predict(x_adv))
-        if x_adv_pred != y[0]:
-            break
+            # Generate sample targeting `target` class
+            y_target = np.zeros((1, 10), dtype=np.int64)
+            y_target[0, target] = 1
+            x_adv_sample = super().generate(
+                np.expand_dims(x_sample, axis=0), y_target
+            )
 
+            # Check - does this example fool the classifier?
+            x_adv_pred = np.argmax(self.estimator.predict(x_adv_sample))
+            if x_adv_pred != y_sample:
+                break
+        x_adv.append(x_adv_sample)
+
+    x_adv = np.concatenate(x_adv, axis=0)
     return x_adv
 ```
 
