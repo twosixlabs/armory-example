@@ -34,6 +34,7 @@ First, we implement the `__init__` method, which receives as arguments the estim
 
 ```python
 import numpy as np
+
 from art.attacks.evasion import ProjectedGradientDescent
 
 class CustomAttack(ProjectedGradientDescent):
