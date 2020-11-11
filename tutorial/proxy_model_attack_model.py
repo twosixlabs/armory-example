@@ -1,13 +1,14 @@
-import numpy as np
 import torch
+import torch.nn as nn
+from typing import Optional
+
 from art.attacks.evasion import ProjectedGradientDescent
 from armory.baseline_models.pytorch.cifar import Net
-import torch.nn as nn
 from art.classifiers import PyTorchClassifier
-from typing import Optional
 
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 
 class ModifiedNet(nn.Module):
     def __init__(self):

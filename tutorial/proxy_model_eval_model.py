@@ -1,9 +1,10 @@
-from armory.baseline_models.pytorch.cifar import Net
 import torch
 import torch.nn as nn
-from art.classifiers import PyTorchClassifier
-from torchvision.transforms import RandomErasing
 from typing import Optional
+
+from armory.baseline_models.pytorch.cifar import Net
+from art.classifiers import PyTorchClassifier
+
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -17,7 +18,7 @@ class ModifiedNet(nn.Module):
         if self.training:
             return self.net.forward(x)
         else:
-            x_mod = torch.round(x * 256.) / 256.
+            x_mod = torch.round(x * 256.0) / 256.0
             return self.net.forward(x_mod)
 
 
