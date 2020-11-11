@@ -7,3 +7,4 @@ For a more comprehensive introduction to adaptive attack techniques, we recommen
 # Tutorials
 1. [Developing a Custom Attack](custom_attack.md)
 2. [Patch a Gradient Function](patch_loss_gradient.md)
+3. [Develop a Proxy Model](proxy_model.md)
