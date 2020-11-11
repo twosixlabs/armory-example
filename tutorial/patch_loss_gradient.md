@@ -23,7 +23,7 @@ First, we modify the model to apply a `RandomErasing` operation to each input be
 },
 ```
 
-Next, we will follow the procedure outlined in [Tutorial 1]() to create a `CustomAttack` class, which will give us flexibility over how the attack is performed.  This is accomplished via changes to the `module` and `name` parameters of the attack to point to a custom class.  The updated attack configuration is shown below.
+Next, we will follow the procedure outlined in [Tutorial 1](./custom_attack.json) to create a `CustomAttack` class, which will give us flexibility over how the attack is performed.  This is accomplished via changes to the `module` and `name` parameters of the attack to point to a custom class.  The updated attack configuration is shown below.
 
 ```json
 "attack": {
