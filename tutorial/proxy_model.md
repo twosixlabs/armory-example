@@ -109,7 +109,7 @@ class CustomAttack(ProjectedGradientDescent):
 
 # Complete Example
 The complete example is demonstrated via the following files:
-* [Scenario File](./proxy_model.json)
+* [Configuration File](./proxy_model.json)
 * [Model Under Evaluation](./proxy_model_eval_model.py)
 * [Custom Attack](./proxy_model_attack_model.py)
 

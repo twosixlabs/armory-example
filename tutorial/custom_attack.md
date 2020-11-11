@@ -82,7 +82,7 @@ Finally, so that the custom model and attack code are discovered regardless of w
 
 # Complete Example
 The complete example is demonstrated via the following files:
-* [Scenario File](./custom_attack.json)
+* [Configuration File](./custom_attack.json)
 * [Custom Attack](./custom_attack.py)
 
 This example may be run with the following command:

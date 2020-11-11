@@ -80,7 +80,7 @@ def loss_gradient_framework(self, x: "torch.Tensor", y: "torch.Tensor", **kwargs
 
 # Complete Example
 The complete example is demonstrated via the following files:
-* [Scenario File](./patch_loss_gradient.json)
+* [Configuration File](./patch_loss_gradient.json)
 * [Model Under Evaluation](./patch_loss_gradient_model.py)
 * [Custom Attack](./patch_loss_gradient.py)
 
