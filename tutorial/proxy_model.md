@@ -47,16 +47,17 @@ Next, we will again create a custom attack class by modifying the `module` and `
 Lastly, we create the `proxy_model_attack_model.py` file, including a `CustomAttack` class and a proxy model to use during attack.  The code for this change can be seen below.  Here, we have created a proxy model given by `ModifiedNet`, which is simply the model under evaluation without the quantization operation.  We have also created `make_modified_model` and `get_art_model` convenience methods to return the proxy model.  Finally, we have created the `CustomAttack` class which inherits `ProjectedGradientDescent`.  The key difference here instead of a standard PGD attack is the use of the proxy model during the attack generation.  This is performed by creating the proxy model via a call to `get_art_model`, loading the weights from the original model into the proxy model, and initializing an attack with the proxy model.
 
 ```python
-import numpy as np
 import torch
+import torch.nn as nn
+from typing import Optional
+
 from art.attacks.evasion import ProjectedGradientDescent
 from armory.baseline_models.pytorch.cifar import Net
-import torch.nn as nn
 from art.classifiers import PyTorchClassifier
-from typing import Optional
 
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 
 class ModifiedNet(nn.Module):
     def __init__(self):
@@ -104,7 +105,6 @@ class CustomAttack(ProjectedGradientDescent):
 
         # Point attack to copy of model
         super().__init__(new_estimator, **kwargs)
-
 ```
 
 # Complete Example
