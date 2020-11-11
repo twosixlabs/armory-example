@@ -4,7 +4,7 @@ Here, we demonstrate how to patch the `loss_gradient_framework` method of the mo
 # Goal
 Starting with the baseline CIFAR10 scenario [here](../official_scenario_configs/cifar10_baseline.json), we will slightly modify the model to apply a random transformation to each input image before classification.  In particular, we will apply the `RandomErasing` operation, implemented in Torch, to each input image, then run each modified image through a forward pass of the model.
 
-Because this operation is random, one might want to average the gradient over many instances of the random transformation as part of a white box attack.  Here, we demonstrate how to achieve this via modifying the `patch_gradient_framework` method of the model.
+Because this operation is random, one might want to average the gradient over many instances of the random transformation as part of a white box attack.  Here, we demonstrate how to achieve this via modifying the `loss_gradient_framework` method of the model.
 
 # Implementation
 First, we modify the model to apply a `RandomErasing` operation to each input before classification.  The modified model is available [here](./patch_loss_gradient_model.py).  We also update the scenario configuration file to point to the updated model.  The relevant lines of the updated configuration are shown below.
