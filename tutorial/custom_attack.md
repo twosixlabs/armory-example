@@ -70,6 +70,12 @@ def generate(self, x, y):
     return x_adv
 ```
 
+Finally, so that the custom model and attack code are discovered regardless of which directory ARMORY is run from, we update the `local_repo_path` field in the configuration file to point to the directory containing this code.
+
+```json
+"local_repo_path": "twosixlabs/fork/armory-example/tutorial",
+```
+
 # Complete Example
 The complete example is demonstrated via the following files:
 * [Scenario File](./custom_attack.json)
@@ -79,6 +85,3 @@ This example may be run with the following command:
 ```
 armory run custom_attack.json
 ```
-
-# Notes
-* This example is designed to be run from within the tutorial directory.  To access the `CustomAttack` class from another location, set the `local_repo_path` parameter under `sysconfig` in the scenario file to point to the folder containing the custom class.

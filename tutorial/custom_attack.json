@@ -52,6 +52,7 @@
         "docker_image": "twosixarmory/pytorch:0.12.2",
         "external_github_repo": null,
         "gpus": "all",
+        "local_repo_path": "twosixlabs/fork/armory-example/tutorial",
         "output_dir": null,
         "output_filename": null,
         "use_gpu": false
