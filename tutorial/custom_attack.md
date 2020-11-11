@@ -7,17 +7,20 @@ Starting with the defended CIFAR10 scenario [here](../official_scenario_configs/
 # Implementation
 Because ARMORY targeted attacks are designed to attack only one class at a time, and not repeat the attack with a different target for the same example, this requires a custom attack.
 
-First, we will modify our scenario file to point to a custom attack class.  The attack that is loaded is controlled by the `module` and `name` fields.  We will implement our attack in a class named `CustomAttack` which will live in the `custom_attack.py` file in this directory.  The various parameters in `kwargs` align with the arguments of the `ProjectedGradientDescent` class in ART, and will control how each of these attacks is performed.  One word of caution: despite wanting to implement a targeted attack at each stage of the custom attack, we will set the `targeted` field to `false`.  This is because a standard targeted PGD attack will attack only a single class and the attack would receive a target label as determined by ARMORY or as further configured in the scenario file.  Instead, we will set the `use_label` field to `true` because our attack requires knowledge of the ground truth class in order to cycle through incorrect target classes.  The updated attack configuration is shown below:
+First, we will modify our scenario file to point to a custom attack class.  The attack that is loaded is controlled by the `module` and `name` fields.  We will implement our attack in a class named `CustomAttack` which will live in the `custom_attack.py` file in this directory.  The various parameters in `kwargs` align with the arguments of the `ProjectedGradientDescent` class in ART, and will control how each of these attacks is performed.  A word of caution: despite wanting to implement a targeted attack at each stage of the custom attack, we will set the `targeted` field to `false`.  This is because a standard targeted PGD attack will attack only a single class and the attack would receive a target label as determined by ARMORY or as further configured in the scenario file.  Instead, we will set the `use_label` field to `true` because our attack requires knowledge of the ground truth class in order to cycle through incorrect target classes.  The updated attack configuration is shown below:
 
 ```json
 "attack": {
     "knowledge": "white",
     "kwargs": {
         "batch_size": 1,
-        "eps": 0.2,
-        "eps_step": 0.1,
-        "num_random_init": 0,
-        "targeted": false
+        "eps": 0.031,
+        "eps_step": 0.007,
+        "max_iter": 20,
+        "num_random_init": 1,
+        "random_eps": false,
+        "targeted": false,
+        "verbose": false
     },
     "module": "custom_attack",
     "name": "CustomAttack",
