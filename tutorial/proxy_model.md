@@ -111,7 +111,7 @@ class CustomAttack(ProjectedGradientDescent):
 The complete example is demonstrated via the following files:
 * [Configuration File](./proxy_model.json)
 * [Model Under Evaluation](./proxy_model_eval_model.py)
-* [Custom Attack](./proxy_model_attack_model.py)
+* [Custom Attack with Proxy Model](./proxy_model_attack_model.py)
 
 This example may be run with the following command:
 ```
