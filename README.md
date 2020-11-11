@@ -19,3 +19,6 @@ containers, users are able to run their own custom Scenarios, Models, etc.
 
 We've added some custom configurations for using different attacks and 
 defenses using ART modules.
+
+### Tutorial
+For an introduction to adaptive attack evaluation in Armory, see the following [tutorial](./tutorial/README.md)
