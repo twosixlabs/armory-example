@@ -51,7 +51,9 @@ job can be found in your output directory selected in the `armory configure`
 step. You can find sample job-files in the `armory-example` directory in the
 `official_scenario_configs` and `example_scenarios` directories.
 
-Using one of the provided jobs, run
+> TODO: is there a explainable difference between the two directories?
+
+To evaluate one of the provided scenarios, run
 ```
 armory run official_scenario_configs/so2sat_baseline.json
 ```
@@ -78,20 +80,20 @@ Attack:  38% 60/157 [01:41<02:41,  1.66s/it]
 INFO Saving evaluation results saved to <output_dir>/ImageClassificationTask_1604542702.json
 Scenario has finished running cleanly
 ```
-Don't be concerned with the details here, it is just to give you a taste of
+Don't be concerned with the details, it is just to give you a taste of
 the thousands of lines of logging that are generated. The last two lines are
 important.
 
 
 ## Scenario output
 
-When the armory job completes, results will be placed in a date-stamped
+When the armory job completes, results will be put in a date-stamped
 subdirectory in your `~/.armory/outputs` directory. For the example
 run above the output file
 ```
 ~/.armory/outputs/2020-11-05T020942.176390/ImageClassificationTask_1604542702.json
 ```
-was created. Yes, we realize that microsecond accuracy is likely not needed and will be removed in a future release.
+was created.
 
 The output json contains the
 version of armory it was run on, the job it was run with, and a results
@@ -99,20 +101,34 @@ dictionary containing the relevant
 [metrics](https://armory.readthedocs.io/en/latest/metrics/) from the run, and a
 timestamp.
 
-# How to make an armory job
+# How to make a new armory job
 
-An armory job consists of a job-file which describes the model evaluation
-along with files specified in that job. Rather than constructing a job from
-scratch, it is easier to copy an existing job and modify it. We'll run
-through an example here.
+An armory job consists of an armory scenario configuration which describes the model
+evaluation along with files by that that job. Rather than constructing a scenario from
+scratch, it is easier to copy an existing scenario and modify it. We'll run through an
+example here.
+
+We'll start with the [so2sat_baseline][so2base] job. The so2sat_baseline describes a
+multimodal classification problem against the SO2Sat dataset. For convenience, we'll
+also use a pre-built weights file. Outside of this demo, you'd probably build your own
+weights via model training.
+
+We copy that original job to `my_so2sat.json` and update specifications
+within it.
+```
+cp official_scenario_configs/so2sat_baseline.json my_so2sat.json
+```
+In that file there are references to:
+
+  1. the `"module"` and `"name"` lines which point to the python module and method which
+     provide an ART model, and
+  2. the `"weights_file"` line which tells armory where to obtain model weights.
+
+We'll change the referents of these in turn and then alter the `my_so2sat.json` job file
+to match them.
+
 
 ### Model updates
-
-We'll start with the [so2sat_baseline][so2base] job. The so2sat_baseline
-describes a multimodal classification problem against the SO2Sat dataset.
-For convenience, we'll also use a pre-built [weights file][weights].
-Outside of this demo, you'd probably build your own weights via model
-training.
 
 For armory to evaluate a neural network model, it needs to be wrapped
 with [Adversarial Robustness Toolbox][art] estimator. These wrappers
@@ -140,11 +156,11 @@ def get_art_model(model_kwargs, wrapper_kwargs, weights_path=None):
     )
     return wrapped_model
 ```
+As shown, we adapt the `get_art_model` method with the weights from `weights_path`
+loaded and returns a wrapped version of the model.
 
-As shown in the excerpt above, to integrate, we add a method that takes
-arguments of `model_kwargs, wrapper_kwargs, weights_path` and returns the model
-with the weights from `weights_path` loaded and returns a wrapped version of the
-model.
+An already adapted version of the model file is provided in the
+[so2sat_split.py][wrapped] in the `model_to_integrate` directory.
 
   [so2base]: https://github.com/twosixlabs/armory-example/blob/master/official_scenario_configs/so2sat_baseline.json
   [weights]: https://armory-public-data.s3.us-east-2.amazonaws.com/model-weights/so2sat_split_weights.model
@@ -154,19 +170,21 @@ model.
 
 ### Weights file transfer
 
-The weights file need to be copied to the `~/.armory/saved_models`.
+For this demo we need to download a weights file from armory-public file storage on
+Amazon S3 and place them in `~/.armory/saved_models`.
 ```
+curl -O https://armory-public-data.s3.us-east-2.amazonaws.com/model-weights/so2sat_split_weights.model
 cp so2sat_split_weights.model ~/.armory/saved_models
 ```
+> TODO: Matt needs to find out why weights would **not** have been retrieved by `armory
+> run`
 
-### Config-file updates
 
-Now that we have modified the model, we need to alter a evaluation config file
-to incorporate it. The model can be integrated by adapting the official
-[job config][so2base].
+### Updating the scenario configuration file
 
-We copy that original job to `my_so2sat.json` and update specifications
-within it.
+Now that we have modified the model and installed the weights, we need to alter a
+evaluation config file to incorporate them. We integrate these into the scenario
+configuration we copied into `my_so2sat.json` earlier
 
 First, we update the model to refer to the path of the example_model, in this
 case, the module is `model_to_integrate.model.so2sat_split`. Because
@@ -182,37 +200,53 @@ in our job configuration file. Here we only specify the name of the weights
 file, not the full path; armory knows to look for it in the
 `~/.armory/saved_models` directory.
 
-Finally, since the official scenario config was a Keras model and we are using a
-PyTorch model, we update the docker image to be the PyTorch image yielding
-the line
+Finally, since the official scenario config was a TensorFlow.Keras model and we are now
+using a PyTorch model, we update the docker image to the PyTorch flavor yielding the
+line
 ```
 "docker_image": "twosixarmory/pytorch:0.12.1"
 ```
 in the sysconfig block.
 
-You can see what the [modified file][integrated] looks like with all the changes
-we've made. The Armory documentation has full details of the [configuration file
-format][configs].
+An already adapted [scenario configuration file][integrated] is provided. It contains
+the changes we've made. You can copy the updated scenario if you want
+```
+cp example_scenario_configs/integrate_so2sat_ref.json my_so2sat.json
+```
+The Armory documentation has full details of the [configuration file format][configs].
 
   [configs]: https://armory.readthedocs.io/en/latest/configuration_files
   [external-repo]: https://armory.readthedocs.io/en/stable/external_repos/
   [integrated]: example_scenario_configs/integrate_so2sat_ref.json
 
-### Checking integration
+> TODO: this section could make a lot more sense if there were symmetry between the
+> scenario config and model files in before and after versions. Something like
+> model_{before,after}.py and config_{before,after}.json. I don't know how much the
+> current names represent some armory convention.
+
+> TODO: should the scenario _description field be changed? It isn't really a baseline
+> config any longer and it might be good to show performers that they _should_
+> try to keep the name meaningful
+
+### Check integration and run
 
 You can check that the new integration works by running
 ```
-armory run --check
+armory run --check my_so2sat.json
 ```
-This will run armory on a single batch of inputs, and without training (except
-for the poisoning scenario, which requires training for integration).
+This will run armory on a single batch of inputs and without training. After this
+check runs without errors you can evaluate the new job:
+```
+armory run my_so2sat.json
+```
+Like all armory runs, this will leave its results in the `~/.armory/out`.
 
 # Appendices
 
-Here are some additional detail that some new users of Armory have
+Here are additional details that some new users of Armory have
 found useful.
 
-## Pre-loading the datasets
+## Downloading the datasets in advance
 
 Before running an armory job, you may want to pre-download all of the model
 weights and datsets by running:
@@ -221,8 +255,8 @@ armory download scenario_download_configs/scenarios-set2.json
 ```
 in your armory-example directory. Depending on your network connection you might
 want let this run overnight or at least across a long lunch break. This step is
-optional, each job will automatically download the relevant weights and datasets
-when it is run with `armory run` if the needed data are not already present.
+optional. Each job will automatically download the relevant weights and datasets
+when it is run with `armory run` if the needed files are not pre-downloaded.
 
 
 ## Common errors
