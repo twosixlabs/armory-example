@@ -1,5 +1,5 @@
 {
-    "_description": "Baseline so2sat classification",
+    "_description": "armory test integration of pytorch model",
     "adhoc": null,
     "attack": {
         "generate_kwargs": {

@@ -51,8 +51,6 @@ job can be found in your output directory selected in the `armory configure`
 step. You can find sample job-files in the `armory-example` directory in the
 `official_scenario_configs` and `example_scenarios` directories.
 
-> TODO: is there a explainable difference between the two directories?
-
 To evaluate one of the provided scenarios, run
 ```
 armory run official_scenario_configs/so2sat_baseline.json
@@ -174,17 +172,14 @@ For this demo we need to download a weights file from armory-public file storage
 Amazon S3 and place them in `~/.armory/saved_models`.
 ```
 curl -O https://armory-public-data.s3.us-east-2.amazonaws.com/model-weights/so2sat_split_weights.model
-cp so2sat_split_weights.model ~/.armory/saved_models
+mv so2sat_split_weights.model ~/.armory/saved_models
 ```
-> TODO: Matt needs to find out why weights would **not** have been retrieved by `armory
-> run`
-
 
 ### Updating the scenario configuration file
 
 Now that we have modified the model and installed the weights, we need to alter a
 evaluation config file to incorporate them. We integrate these into the scenario
-configuration we copied into `my_so2sat.json` earlier
+configuration we copied into `my_so2sat.json` earlier.
 
 First, we update the model to refer to the path of the example_model, in this
 case, the module is `model_to_integrate.model.so2sat_split`. Because
@@ -218,15 +213,6 @@ The Armory documentation has full details of the [configuration file format][con
   [configs]: https://armory.readthedocs.io/en/latest/configuration_files
   [external-repo]: https://armory.readthedocs.io/en/stable/external_repos/
   [integrated]: example_scenario_configs/integrate_so2sat_ref.json
-
-> TODO: this section could make a lot more sense if there were symmetry between the
-> scenario config and model files in before and after versions. Something like
-> model_{before,after}.py and config_{before,after}.json. I don't know how much the
-> current names represent some armory convention.
-
-> TODO: should the scenario _description field be changed? It isn't really a baseline
-> config any longer and it might be good to show performers that they _should_
-> try to keep the name meaningful
 
 ### Check integration and run
 
@@ -295,11 +281,3 @@ terminal where this armory run command was started.
 The complete Armory documentation: https://armory.readthedocs.io/en/latest/
 
 The Armory GitHub repository: https://github.com/twosixlabs/armory
-
-# stuff matt pulled out of the happy path again
-
-Note: the model does not need to reside in the same repo as
-`armory-example`. We can add external Github repos as described in the [External
-repo documentation][external-repo]).
-
----
