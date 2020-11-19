@@ -1,33 +1,22 @@
 {
-    "_description": "XView object detection, contributed by MITRE Corporation",
+    "_description": "APRICOT object detection, contributed by MITRE Corporation",
     "adhoc": null,
     "attack": {
-        "generate_kwargs": {
-            "patch_height": 50,
-            "patch_width": 50,
-            "xmin": 0,
-            "ymin": 0
-        },
         "knowledge": "white",
         "kwargs": {
-            "batch_size": 1,
-            "eps": 1.0,
-            "eps_step": 0.01,
-            "max_iter": 200,
-            "num_random_init": 0,
-            "random_eps": false,
-            "targeted": false,
-            "verbose": true
+            "batch_size": 1
         },
-        "module": "armory.art_experimental.attacks.pgd_patch",
-        "name": "PGDPatch",
+        "module": "armory.data.adversarial_datasets",
+        "name": "apricot_dev_adversarial",
+        "type": "preloaded",
         "use_label": false
     },
     "dataset": {
         "batch_size": 1,
+        "eval_split": "adversarial",
         "framework": "numpy",
-        "module": "armory.data.datasets",
-        "name": "xview"
+        "module": "armory.data.adversarial_datasets",
+        "name": "apricot_dev_adversarial"
     },
     "defense": {
         "kwargs": {
@@ -38,7 +27,7 @@
                 0.0,
                 1.0
             ],
-            "quality": 50
+            "quality": 10
         },
         "module": "armory.art_experimental.defences.jpeg_compression_normalized",
         "name": "JpegCompressionNormalized",
@@ -46,9 +35,10 @@
     },
     "metric": {
         "means": true,
-        "perturbation": "l0",
+        "perturbation": "linf",
         "record_metric_per_sample": false,
         "task": [
+            "apricot_patch_targeted_AP_per_class",
             "object_detection_AP_per_class"
         ]
     },
@@ -56,9 +46,9 @@
         "fit": false,
         "fit_kwargs": {},
         "model_kwargs": {},
-        "module": "armory.baseline_models.pytorch.xview_frcnn",
+        "module": "armory.baseline_models.tf_graph.mscoco_frcnn",
         "name": "get_art_model",
-        "weights_file": "xview_model_state_dict_epoch_99_loss_0p67",
+        "weights_file": null,
         "wrapper_kwargs": {}
     },
     "scenario": {
@@ -67,7 +57,7 @@
         "name": "ObjectDetectionTask"
     },
     "sysconfig": {
-        "docker_image": "twosixarmory/pytorch:0.12.3",
+        "docker_image": "twosixarmory/tf1:0.12.3",
         "external_github_repo": null,
         "gpus": "all",
         "output_dir": null,
