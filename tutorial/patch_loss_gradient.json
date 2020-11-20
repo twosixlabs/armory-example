@@ -49,7 +49,7 @@
         "name": "ImageClassificationTask"
     },
     "sysconfig": {
-        "docker_image": "twosixarmory/pytorch:0.12.2",
+        "docker_image": "twosixarmory/pytorch:0.12.3",
         "external_github_repo": null,
         "gpus": "all",
         "local_repo_path": "twosixlabs/fork/armory-example/tutorial",

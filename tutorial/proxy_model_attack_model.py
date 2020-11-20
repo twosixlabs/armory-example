@@ -50,9 +50,7 @@ class CustomAttack(ProjectedGradientDescent):
 
         # Create copy of the model (to avoid overwriting loss_gradient_framework of original model)
         new_estimator = get_art_model(model_kwargs={}, wrapper_kwargs={})
-        new_estimator._model._model.load_state_dict(
-            estimator._model._model.state_dict()
-        )
+        new_estimator.model.load_state_dict(estimator.model.state_dict())
 
         # Point attack to copy of model
         super().__init__(new_estimator, **kwargs)
