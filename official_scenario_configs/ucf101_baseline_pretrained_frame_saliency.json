@@ -1,22 +1,25 @@
 {
-    "_description": "UCF101 video classification from pretrained, contributed by MITRE Corporation",
+    "_description": "Resisc45 image classification, contributed by MITRE Corporation",
     "adhoc": null,
     "attack": {
         "knowledge": "white",
         "kwargs": {
-            "batch_size": 1,
-            "eps": 0.2,
-            "eps_step": 0.1,
-            "minimal": false,
-            "num_random_init": 0,
-            "targeted": true
+            "inner_config": {
+                "kwargs": {
+                    "batch_size": 1,
+                    "eps": 0.2,
+                    "eps_step": 0.1,
+                    "minimal": false,
+                    "num_random_init": 0,
+                    "targeted": false
+                },
+                "module": "art.attacks.evasion",
+                "name": "FastGradientMethod"
+            },
+            "method": "iterative_saliency"
         },
-        "module": "art.attacks.evasion",
-        "name": "FastGradientMethod",
-        "targeted_labels": {
-            "num_classes": 101,
-            "scheme": "round-robin"
-        },
+        "module": "armory.art_experimental.attacks.frame",
+        "name": "get_frame_saliency",
         "use_label": false
     },
     "dataset": {
@@ -31,15 +34,12 @@
         "perturbation": "linf",
         "record_metric_per_sample": false,
         "task": [
-            "categorical_accuracy",
-            "top_5_categorical_accuracy"
+            "categorical_accuracy"
         ]
     },
     "model": {
         "fit": false,
-        "fit_kwargs": {
-            "nb_epochs": 10
-        },
+        "fit_kwargs": {},
         "model_kwargs": {
             "max_frames": 512,
             "model_status": "ucf101_trained"

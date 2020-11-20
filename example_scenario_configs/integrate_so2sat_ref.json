@@ -1,7 +1,25 @@
 {
-    "_description": "Baseline cifar10 image classification",
+    "_description": "armory test integration of pytorch model",
     "adhoc": null,
     "attack": {
+        "generate_kwargs": {
+            "mask": [
+                1,
+                1,
+                1,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
         "knowledge": "white",
         "kwargs": {
             "batch_size": 1,
@@ -19,9 +37,10 @@
     },
     "dataset": {
         "batch_size": 64,
+        "eval_split": "validation",
         "framework": "numpy",
         "module": "armory.data.datasets",
-        "name": "cifar10"
+        "name": "so2sat"
     },
     "defense": null,
     "metric": {
@@ -33,15 +52,20 @@
         ]
     },
     "model": {
-        "fit": true,
+        "fit": false,
         "fit_kwargs": {
             "nb_epochs": 20
         },
         "model_kwargs": {},
-        "module": "armory.baseline_models.pytorch.cifar",
+        "module": "model_to_integrate.model.so2sat_split",
         "name": "get_art_model",
-        "weights_file": null,
-        "wrapper_kwargs": {}
+        "weights_file": "so2sat_split_weights.model",
+        "wrapper_kwargs": {
+            "clip_values": [
+                -1,
+                1
+            ]
+        }
     },
     "scenario": {
         "kwargs": {},
@@ -49,7 +73,7 @@
         "name": "ImageClassificationTask"
     },
     "sysconfig": {
-        "docker_image": "twosixarmory/pytorch:0.12.3",
+        "docker_image": "twosixarmory/pytorch:0.12.1",
         "external_github_repo": null,
         "gpus": "all",
         "output_dir": null,
