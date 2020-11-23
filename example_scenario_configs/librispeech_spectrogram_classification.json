@@ -4,22 +4,24 @@
     "attack": {
         "knowledge": "white",
         "kwargs": {
-            "batch_size": 32,
-            "eps": 0.2,
-            "eps_step": 0.1,
-            "minimal": false,
-            "num_random_init": 0,
-            "targeted": false
+            "max_eval": 200,
+            "max_iter": 100,
+            "norm": "inf"
         },
         "module": "art.attacks.evasion",
-        "name": "FastGradientMethod"
+        "name": "HopSkipJump"
     },
     "dataset": {
-        "batch_size": 64,
+        "batch_size": 1,
         "module": "armory.data.datasets",
         "name": "librispeech_dev_clean"
     },
-    "defense": null,
+    "defense": {
+        "kwargs": {},
+        "module": "example_defenses.spectogram_preprocessing",
+        "name": "Spectogram",
+        "type": "Preprocessor"
+    },
     "metric": null,
     "model": {
         "fit": false,
@@ -41,6 +43,6 @@
         "docker_image": "twosixarmory/tf1:0.12.1",
         "external_github_repo": null,
         "gpus": "all",
-        "use_gpu": true
+        "use_gpu": false
     }
 }
