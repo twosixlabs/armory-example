@@ -3,6 +3,12 @@
     "adhoc": null,
     "attack": {
         "generate_kwargs": {
+            "channels": [
+                0,
+                1,
+                2,
+                3
+            ],
             "patch_ratio": 0.05,
             "xmin": 0,
             "ymin": 0
