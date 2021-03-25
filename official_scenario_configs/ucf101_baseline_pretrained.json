@@ -5,15 +5,25 @@
         "knowledge": "white",
         "kwargs": {
             "batch_size": 1,
-            "eps": 0.2,
-            "eps_step": 0.1,
-            "minimal": false,
-            "num_random_init": 0,
-            "targeted": false
+            "frame_index": 1,
+            "inner_config": {
+                "kwargs": {
+                    "batch_size": 1,
+                    "eps": 0.015,
+                    "eps_step": 0.005,
+                    "max_iter": 10,
+                    "targeted": false,
+                    "verbose": false
+                },
+                "module": "art.attacks.evasion",
+                "name": "ProjectedGradientDescent"
+            },
+            "method": "iterative_saliency",
+            "verbose": false
         },
-        "module": "art.attacks.evasion",
-        "name": "FastGradientMethod",
-        "use_label": false
+        "module": "armory.art_experimental.attacks.frame",
+        "name": "get_frame_saliency",
+        "use_label": true
     },
     "dataset": {
         "batch_size": 1,
@@ -24,8 +34,11 @@
     "defense": null,
     "metric": {
         "means": true,
-        "perturbation": "linf",
-        "record_metric_per_sample": false,
+        "perturbation": [
+            "l0",
+            "linf"
+        ],
+        "record_metric_per_sample": true,
         "task": [
             "categorical_accuracy",
             "top_5_categorical_accuracy"
@@ -51,7 +64,7 @@
         "name": "Ucf101"
     },
     "sysconfig": {
-        "docker_image": "twosixarmory/pytorch:0.12.3",
+        "docker_image": "twosixarmory/pytorch:0.13.0",
         "external_github_repo": "yusong-tan/MARS",
         "gpus": "all",
         "output_dir": null,

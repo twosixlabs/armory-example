@@ -1,37 +1,30 @@
 {
-    "_description": "XView object detection, contributed by MITRE Corporation",
+    "_description": "DAPRICOT object detection, contributed by MITRE Corporation",
     "adhoc": null,
     "attack": {
         "generate_kwargs": {
-            "patch_height": 50,
-            "patch_width": 50,
-            "xmin": 0,
-            "ymin": 0
+            "threat_model": "digital"
         },
         "knowledge": "white",
         "kwargs": {
             "batch_size": 1,
             "eps": 1.0,
-            "eps_step": 0.01,
-            "max_iter": 200,
-            "num_random_init": 0,
-            "random_eps": false,
-            "targeted": true,
-            "verbose": true
+            "eps_step": 0.02,
+            "max_iter": 100
         },
-        "module": "armory.art_experimental.attacks.pgd_patch",
-        "name": "PGDPatch",
+        "module": "armory.art_experimental.attacks.dapricot_patch",
+        "name": "DApricotMaskedPGD",
         "targeted_labels": {
             "scheme": "object_detection_fixed",
             "value": 2
-        },
-        "use_label": false
+        }
     },
     "dataset": {
         "batch_size": 1,
+        "eval_split": "large+medium+small",
         "framework": "numpy",
-        "module": "armory.data.datasets",
-        "name": "xview"
+        "module": "armory.data.adversarial_datasets",
+        "name": "dapricot_dev_adversarial"
     },
     "defense": null,
     "metric": {
@@ -39,25 +32,25 @@
         "perturbation": "l0",
         "record_metric_per_sample": false,
         "task": [
-            "object_detection_AP_per_class"
+            "dapricot_patch_targeted_AP_per_class"
         ]
     },
     "model": {
         "fit": false,
         "fit_kwargs": {},
         "model_kwargs": {},
-        "module": "armory.baseline_models.pytorch.xview_frcnn",
+        "module": "armory.baseline_models.tf_graph.mscoco_frcnn",
         "name": "get_art_model",
-        "weights_file": "xview_model_state_dict_epoch_99_loss_0p67",
+        "weights_file": null,
         "wrapper_kwargs": {}
     },
     "scenario": {
         "kwargs": {},
-        "module": "armory.scenarios.object_detection",
+        "module": "armory.scenarios.dapricot_scenario",
         "name": "ObjectDetectionTask"
     },
     "sysconfig": {
-        "docker_image": "twosixarmory/pytorch:0.13.0",
+        "docker_image": "twosixarmory/tf1:0.13.0",
         "external_github_repo": null,
         "gpus": "all",
         "output_dir": null,
