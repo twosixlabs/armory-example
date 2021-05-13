@@ -1,19 +1,27 @@
 {
-    "_description": "UCF101 video classification with finetuning, contributed by MITRE Corporation",
+    "_description": "UCF101 video classification from pretrained, contributed by MITRE Corporation",
     "adhoc": null,
     "attack": {
+        "generate_kwargs": {
+            "patch_ratio": 0.1,
+            "video_input": true,
+            "xmin": 0,
+            "ymin": 0
+        },
         "knowledge": "white",
         "kwargs": {
             "batch_size": 1,
-            "eps": 0.2,
-            "eps_step": 0.1,
-            "minimal": false,
+            "eps": 1.0,
+            "eps_step": 0.02,
+            "max_iter": 100,
             "num_random_init": 0,
-            "targeted": false
+            "random_eps": false,
+            "targeted": false,
+            "verbose": false
         },
-        "module": "art.attacks.evasion",
-        "name": "FastGradientMethod",
-        "use_label": false
+        "module": "armory.art_experimental.attacks.pgd_patch",
+        "name": "PGDPatch",
+        "use_label": true
     },
     "dataset": {
         "batch_size": 1,
@@ -24,27 +32,30 @@
     "defense": null,
     "metric": {
         "means": true,
-        "perturbation": "linf",
-        "record_metric_per_sample": false,
+        "perturbation": [
+            "l0"
+        ],
+        "record_metric_per_sample": true,
         "task": [
             "categorical_accuracy",
             "top_5_categorical_accuracy"
         ]
     },
     "model": {
-        "fit": true,
+        "fit": false,
         "fit_kwargs": {
-            "fit_batch_size": 16,
             "nb_epochs": 10
         },
         "model_kwargs": {
             "max_frames": 512,
-            "model_status": "kinetics_pretrained"
+            "model_status": "ucf101_trained"
         },
         "module": "armory.baseline_models.pytorch.ucf101_mars",
         "name": "get_art_model",
-        "weights_file": "mars_kinetics_v1.pth",
-        "wrapper_kwargs": {}
+        "weights_file": "mars_ucf101_v1.pth",
+        "wrapper_kwargs": {
+            "channels_first": false
+        }
     },
     "scenario": {
         "kwargs": {},
