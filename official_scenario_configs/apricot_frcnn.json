@@ -1,25 +1,23 @@
 {
-    "_description": "Resisc45 image classification, contributed by MITRE Corporation",
+    "_description": "APRICOT object detection, contributed by MITRE Corporation",
     "adhoc": null,
     "attack": {
         "knowledge": "white",
         "kwargs": {
             "batch_size": 1,
-            "eps": 0.2,
-            "eps_step": 0.1,
-            "minimal": false,
-            "num_random_init": 0,
-            "targeted": false
+            "split": "frcnn+ssd+retinanet"
         },
-        "module": "art.attacks.evasion",
-        "name": "FastGradientMethod",
+        "module": "armory.data.adversarial_datasets",
+        "name": "apricot_dev_adversarial",
+        "type": "preloaded",
         "use_label": false
     },
     "dataset": {
-        "batch_size": 16,
+        "batch_size": 1,
+        "eval_split": "frcnn+ssd+retinanet",
         "framework": "numpy",
-        "module": "armory.data.datasets",
-        "name": "resisc45"
+        "module": "armory.data.adversarial_datasets",
+        "name": "apricot_dev_adversarial"
     },
     "defense": null,
     "metric": {
@@ -27,22 +25,23 @@
         "perturbation": "linf",
         "record_metric_per_sample": false,
         "task": [
-            "categorical_accuracy"
+            "apricot_patch_targeted_AP_per_class",
+            "object_detection_AP_per_class"
         ]
     },
     "model": {
         "fit": false,
         "fit_kwargs": {},
         "model_kwargs": {},
-        "module": "armory.baseline_models.keras.densenet121_resisc45",
+        "module": "armory.baseline_models.tf_graph.mscoco_frcnn",
         "name": "get_art_model",
-        "weights_file": "densenet121_resisc45_v1.h5",
+        "weights_file": null,
         "wrapper_kwargs": {}
     },
     "scenario": {
         "kwargs": {},
-        "module": "armory.scenarios.image_classification",
-        "name": "ImageClassificationTask"
+        "module": "armory.scenarios.object_detection",
+        "name": "ObjectDetectionTask"
     },
     "sysconfig": {
         "docker_image": "twosixarmory/tf1:0.13.3",

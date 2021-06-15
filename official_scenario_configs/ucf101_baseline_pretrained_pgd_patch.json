@@ -2,27 +2,25 @@
     "_description": "UCF101 video classification from pretrained, contributed by MITRE Corporation",
     "adhoc": null,
     "attack": {
+        "generate_kwargs": {
+            "patch_ratio": 0.1,
+            "video_input": true,
+            "xmin": 0,
+            "ymin": 0
+        },
         "knowledge": "white",
         "kwargs": {
             "batch_size": 1,
-            "frame_index": 1,
-            "inner_config": {
-                "kwargs": {
-                    "batch_size": 1,
-                    "eps": 0.015,
-                    "eps_step": 0.005,
-                    "max_iter": 10,
-                    "targeted": false,
-                    "verbose": false
-                },
-                "module": "art.attacks.evasion",
-                "name": "ProjectedGradientDescent"
-            },
-            "method": "iterative_saliency",
+            "eps": 1.0,
+            "eps_step": 0.02,
+            "max_iter": 100,
+            "num_random_init": 0,
+            "random_eps": false,
+            "targeted": false,
             "verbose": false
         },
-        "module": "armory.art_experimental.attacks.frame",
-        "name": "get_frame_saliency",
+        "module": "armory.art_experimental.attacks.pgd_patch",
+        "name": "PGDPatch",
         "use_label": true
     },
     "dataset": {
@@ -35,8 +33,7 @@
     "metric": {
         "means": true,
         "perturbation": [
-            "l0",
-            "linf"
+            "l0"
         ],
         "record_metric_per_sample": true,
         "task": [
@@ -56,7 +53,9 @@
         "module": "armory.baseline_models.pytorch.ucf101_mars",
         "name": "get_art_model",
         "weights_file": "mars_ucf101_v1.pth",
-        "wrapper_kwargs": {}
+        "wrapper_kwargs": {
+            "channels_first": false
+        }
     },
     "scenario": {
         "kwargs": {},

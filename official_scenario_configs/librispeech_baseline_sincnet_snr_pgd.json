@@ -5,14 +5,15 @@
         "knowledge": "white",
         "kwargs": {
             "batch_size": 1,
-            "eps": 0.2,
-            "eps_step": 0.1,
-            "minimal": false,
+            "eps": 10,
+            "eps_step": 0.5,
+            "max_iter": 10,
+            "norm": "snr",
             "num_random_init": 0,
             "targeted": false
         },
-        "module": "art.attacks.evasion",
-        "name": "FastGradientMethod",
+        "module": "armory.art_experimental.attacks.snr_pgd",
+        "name": "SNR_PGD",
         "use_label": false
     },
     "dataset": {
@@ -24,8 +25,11 @@
     "defense": null,
     "metric": {
         "means": true,
-        "perturbation": "linf",
-        "record_metric_per_sample": false,
+        "perturbation": [
+            "snr",
+            "snr_db"
+        ],
+        "record_metric_per_sample": true,
         "task": [
             "categorical_accuracy"
         ]
