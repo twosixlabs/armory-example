@@ -28,7 +28,7 @@ First, we will modify our scenario file to point to a custom attack class.  The 
 },
 ```
 
-Next, we will create a new class for the custom attack.  Because the attack will consist of repeated applications of a PGD attack, our new class will inherit from ART's `ProjectGradientDescent` class.  Our new class will override the `__init__` method of the parent class, to control attack configuration, and the `generate` method to control how the attack actually functions.
+Next, we will create a new class for the custom attack.  Because the attack will consist of repeated applications of a PGD attack, our new class will inherit from ART's `ProjectedGradientDescent` class.  Our new class will override the `__init__` method of the parent class, to control attack configuration, and the `generate` method to control how the attack actually functions.
 
 First, we implement the `__init__` method, which receives as arguments the estimator (i.e. classifier) and keyword arguments (kwargs).  Because the PGD arguments are configured in the scenario file, the only change required here is to configure the attack as targeted.  By configuring the attack as a targeted one here, but not in the scenario file, we bypass a check that both `targeted` and `use_label` are set to `true`, and allow our attack to receive ground truth labels while still using a targeted attack.  We then initialize the PGD attack by calling the `__init__` method of the parent class.  The complete `__init__` method is shown below
 
@@ -77,7 +77,7 @@ def generate(self, x, y):
 Finally, so that the custom model and attack code are discovered regardless of which directory ARMORY is run from, we update the `local_repo_path` field in the configuration file to point to the directory containing this code.
 
 ```json
-"local_repo_path": "twosixlabs/fork/armory-example/tutorial",
+"local_repo_path": "twosixlabs/armory-example/tutorial",
 ```
 
 # Complete Example
