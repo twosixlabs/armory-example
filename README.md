@@ -1,5 +1,5 @@
 NOTE: `armory-example` has not been updated for version 0.15.0, and is being deprecated.
-Example config files can be found in [Example Configs](https://github.com/twosixlabs/armory/scenario_configs).
+Example config files can be found in [Example Configs](https://github.com/twosixlabs/armory/tree/master/scenario_configs).
 
 # armory-example
 This repository is meant to be an example of how to run 
